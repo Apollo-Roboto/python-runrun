@@ -1,30 +1,71 @@
 from typing import TypeVar, Generic, Optional, Callable, Type
+import typing
 from dataclasses import dataclass, field
 import inspect
+import copy
 
 
 T = TypeVar('T')
 
-@dataclass(kw_only=True)
 class Argument(Generic[T]):
-	name: str
-	display_name: str
-	description: str
-	required: bool
-	aliases: list[str] = field(default_factory=list)
-	short: Optional[str] = None
-	value: Optional[T] = None
-	
-	# position: Optional[int] = None
 
-@dataclass
+	def __init__(self, *,
+		name: str,
+		display_name: str,
+		description: str,
+		required: bool,
+		aliases: list[str] = [],
+		short: Optional[str] = None,
+		value: Optional[T] = None,
+	) -> None:
+		
+		self.name = name
+		self.display_name = display_name
+		self.description = description
+		self.required = required
+		self.aliases = aliases
+		self.short = short
+		self.value = value
+
+		self._type: Type[T] = None
+		
+		# position: Optional[int] = None
+
+	@property
+	def type(self) -> Type[T]:
+		if self._type == None:
+			self._type = typing.get_args(self.__orig_class__)[0]
+		return self._type
+
+	def __eq__(self, other: object) -> bool:
+		if self.__class__ != other.__class__:
+			return False
+		
+		return self.value == other.value
+
 class CommandDetails:
-	name: str
-	display_name: str
-	description: str
-	aliases: list[str] = field(default_factory=list)
 
-@dataclass(kw_only=True, init=False)
+	def __init__(self, *,
+	      name: str,
+		  display_name: str,
+		  description: str,
+		  aliases: list[str] = []
+	):
+		self.name = name
+		self.display_name = display_name
+		self.description = description
+		self.aliases = aliases
+	
+	def __eq__(self, other: object) -> bool:
+		if self.__class__ != other.__class__:
+			return False
+		return (
+			self.name == other.name and
+			self.display_name == other.display_name and
+			self.description == other.description and
+			self.aliases == other.aliases
+		) 
+
 class Command:
 
 	command_details: CommandDetails
@@ -33,12 +74,27 @@ class Command:
 	def __init__(self, parent_command: Optional['Command'] = None):
 		self._parent_command = parent_command
 
+		# instanciate all arguments at the instance level
+		for key, value in inspect.getmembers(self):
+
+			if type(value) is Argument:
+				setattr(self, key, copy.deepcopy(value))
+
+	def __eq__(self, other: object) -> bool:
+		if self.__class__ != other.__class__:
+			return False
+		
+		if self.command_details != other.command_details:
+			return False
+		
+		return self.get_arguments() == other.get_arguments()
+
 	def run(self):
 		help = getattr(self, 'help')
 		if help in Command.__subclasses__():
 			help(self).run()
 
-	def get_sub_commands(self) -> list['Command']:
+	def get_sub_commands(self) -> list[Type['Command']]:
 		sub_commands = []
 
 		for key, value in inspect.getmembers(self):

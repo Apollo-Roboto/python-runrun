@@ -3,7 +3,7 @@ import os
 
 from colorama import Fore, Style, Back
 
-from models import Command, CommandDetails, Argument
+from arcommander.models import Command, CommandDetails, Argument
 
 class HelpCommand(Command):
 

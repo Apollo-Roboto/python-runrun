@@ -2,8 +2,9 @@ import logging
 import sys
 from colorama import Fore, Style
 
-from models import Argument, Command, CommandDetails
-from builtin_command import HelpCommand
+from arcommander.models import Argument, Command, CommandDetails
+from arcommander.builtin_command import HelpCommand
+from arcommander.command_parser import CommandParser
 
 logging.basicConfig(
 	stream=sys.stdout,
@@ -67,18 +68,30 @@ class RootCommand(Command):
 def main():
 
 	# create --title 'A thing' --description 'Would you believe it? It is a thing!'
-	root_cmd = RootCommand()
-	create_cmd = root_cmd.create(root_cmd)
-	create_cmd.title.value = 'A thing'
-	create_cmd.description.value = 'Would you believe it? It is a thing!'
+	# root_cmd = RootCommand()
+	# create_cmd = root_cmd.create(root_cmd)
+	# create_cmd.title.value = 'A thing'
+	# create_cmd.description.value = 'Would you believe it? It is a thing!'
 	# create_cmd.run()
 
-	create_cmd.help(create_cmd).run()
+	# create_cmd.help(create_cmd).run()
 
 	# root_cmd.run()
 
 	# root_cmd = RootCommand()
 	# print(root_cmd.get_sub_commands())
+
+	cmd_parser = CommandParser(RootCommand)
+	command = cmd_parser.parse(sys.argv[1:])
+
+	if command != None:
+		print(f'the command to run is {command.command_details.name}')
+		command.run()
+	else:
+		print('command is None')
+
+
+
 
 
 if __name__ == '__main__':
