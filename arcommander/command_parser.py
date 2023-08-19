@@ -6,8 +6,8 @@ from arcommander.models import Command, Argument
 class CommandParser:
 	def __init__(self, command: Type[Command], parent_command: Command = None) -> None:
 		self.command = command()
-		self.sub_commands = self.command.get_sub_commands()
-		self.arguments = self.command.get_arguments()
+		self._sub_commands = self.command.get_sub_commands()
+		self._arguments = self.command.get_arguments()
 
 	def parse(self, args: Union[str, list[str]]) -> Command:
 		print(f'I would parse {args}')
@@ -15,6 +15,10 @@ class CommandParser:
 		# make sure it's a list
 		if type(args) == str:
 			args = args.strip().split()
+
+		# if no arguments, return now
+		if len(args) == 0:
+			return self.command
 
 		# check if first argument is a sub command
 		sub_command = self.get_matching_sub_command(args[0])
@@ -55,8 +59,6 @@ class CommandParser:
 		# todo are required satisfied?
 
 		return self.command
-			
-			
 
 	def get_matching_argument_by_position(self, pos: int) -> Optional[Argument]:
 		pass
@@ -67,7 +69,7 @@ class CommandParser:
 		if arg.startswith('--'):
 			arg = arg.removeprefix('--')
 
-			for argument in self.arguments:
+			for argument in self._arguments:
 				name = argument.name.lower()
 				if arg == name:
 					return argument
@@ -78,7 +80,7 @@ class CommandParser:
 		elif arg.startswith('-'):
 			arg = arg.removeprefix('-')
 
-			for argument in self.arguments:
+			for argument in self._arguments:
 				if arg == argument.short.lower():
 					return argument
 				
@@ -87,7 +89,7 @@ class CommandParser:
 	def get_matching_sub_command(self, arg: str) -> Optional[Type[Command]]:
 		arg = arg.lower()
 
-		for sub_command in self.sub_commands:
+		for sub_command in self._sub_commands:
 			name = sub_command.command_details.name.lower()
 			if name == arg:
 				return sub_command
