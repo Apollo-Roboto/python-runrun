@@ -74,7 +74,7 @@ class TestCommandParser(unittest.TestCase):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
-			arg = Argument[int](name='arg', display_name='Argument', description='', required=False)
+			arg = Argument[float](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand).parse(['--arg', '1515.5'])
 		expected_command = RootCommand()
@@ -110,13 +110,29 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_command_with_bool_arg_different_values_pass(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[bool](name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[bool](name='arg2', display_name='Argument 2', description='', required=False)
+			arg3 = Argument[bool](name='arg3', display_name='Argument 3', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg1', '--arg2', 'true', '--arg3', 'false'])
+		expected_command = RootCommand()
+		expected_command.arg1.value = True
+		expected_command.arg2.value = True
+		expected_command.arg3.value = False
+
+		self.assertEqual(returned_command, expected_command)
+
 	def test_parse_command_with_bool_arg_special_value_true_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
-		for true_value in ['yes', 'yup', '👍', ':)', '😊', '1', 'positive', '+', 'OK']:
+		for true_value in ['true', 'yes', 'yup', '👍', ':)', '😊', '1', 'positive', 'OK']:
 
 			returned_command = CommandParser(RootCommand).parse(['--arg', true_value])
 			expected_command = RootCommand()
@@ -130,7 +146,7 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
-		for false_value in ['no', 'nah', '👎', ':(', '☹', '0', 'negative', '-']:
+		for false_value in ['false', 'no', 'nah', '👎', ':(', '☹', '0', 'negative']:
 
 			returned_command = CommandParser(RootCommand).parse(['--arg', false_value])
 			expected_command = RootCommand()
@@ -175,8 +191,12 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_nested_subcommand_no_arg_pass(self):
 
+		class Test4Command(Command):
+			command_details = CommandDetails(name='test4', display_name='', description='')
+
 		class Test3Command(Command):
 			command_details = CommandDetails(name='test3', display_name='', description='')
+			test4 = Test4Command
 
 		class Test2Command(Command):
 			command_details = CommandDetails(name='test2', display_name='', description='')
@@ -190,8 +210,8 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			test1 = Test1Command
 
-		returned_command = CommandParser(RootCommand).parse(['test1', 'test2', 'test3'])
-		expected_command = Test3Command()
+		returned_command = CommandParser(RootCommand).parse(['test1', 'test2', 'test3', 'test4'])
+		expected_command = Test4Command()
 
 		self.assertEqual(returned_command, expected_command)
 

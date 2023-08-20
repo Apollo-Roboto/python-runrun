@@ -1,5 +1,6 @@
 from typing import Union, Optional, Type
 import typing
+from enum import Enum
 
 from arcommander.models import Command, Argument
 
@@ -48,17 +49,52 @@ class CommandParser:
 			# is there a value?
 			value = None
 			if i+1 < len(args):
+
+				value = args[i+1]
+
+			# boolean argument could not have a value
+			if value != None and argument.type == bool and value.startswith('-'):
+				value = None
+			else:
 				i += 1
-				value = args[i]
 
 			if value != None:
-				argument.value = argument.type(value)
+				self.set_value_to_argument(argument, value)
+			elif argument.type == bool:
+				argument.value = True
+			
 
 			print(f'ARGUMENT {argument.display_name} : {argument.value}')
 
 		# todo are required satisfied?
 
 		return self.command
+	
+	def set_value_to_argument(self, argument: Argument, value: str):
+
+		if argument.type == str:
+			argument.value = value
+			return
+
+		if argument.type == bool:
+			argument.value = value.lower() in ['true', 'yes', 'yup', '👍', ':)', '😊', '1', 'positive', 'ok']
+			return
+
+		if argument.type == int:
+			argument.value = int(value)
+			return
+
+		if argument.type == float:
+			argument.value = float(value)
+			return
+
+		if argument.type in Enum.__subclasses__():
+			argument.value = argument.type[value]
+			return
+
+		# if no type match, try to instanciate it anyway
+		instanciated_value = argument.type(value)
+		argument.value = instanciated_value
 
 	def get_matching_argument_by_position(self, pos: int) -> Optional[Argument]:
 		pass
@@ -81,7 +117,7 @@ class CommandParser:
 			arg = arg.removeprefix('-')
 
 			for argument in self._arguments:
-				if arg == argument.short.lower():
+				if argument.short != None and arg == argument.short.lower():
 					return argument
 				
 		return None
