@@ -1,5 +1,7 @@
 import unittest
 from enum import Enum
+from pathlib import Path
+from dataclasses import dataclass
 
 from arcommander.models import Argument, Command, CommandDetails
 from arcommander.command_parser import CommandParser
@@ -8,7 +10,7 @@ BLANK_DETAILS = CommandDetails(name='', display_name='', description='')
 
 class TestCommandParser(unittest.TestCase):
 
-	def test_parse_command_with_two_arg_pass(self):
+	def test_parse_cmd_with_two_arg_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -22,7 +24,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_int_arg_pass(self):
+	def test_parse_cmd_with_int_arg_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -34,7 +36,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_bool_true_arg_pass(self):
+	def test_parse_cmd_with_bool_true_arg_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -46,7 +48,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_bool_false_arg_pass(self):
+	def test_parse_cmd_with_bool_false_arg_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -58,7 +60,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_int_arg_pass(self):
+	def test_parse_cmd_with_int_arg_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -70,7 +72,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_float_arg_pass(self):
+	def test_parse_cmd_with_float_arg_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -82,7 +84,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_enum_arg_pass(self):
+	def test_parse_cmd_with_enum_arg_pass(self):
 		class TestEnum(Enum):
 			A = 1
 			B = 2
@@ -98,7 +100,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_bool_arg_no_value_pass(self):
+	def test_parse_cmd_with_bool_arg_no_value_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -110,7 +112,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_bool_arg_different_values_pass(self):
+	def test_parse_cmd_with_bool_arg_different_values_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -126,7 +128,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_bool_arg_special_value_true_pass(self):
+	def test_parse_cmd_with_bool_arg_special_value_true_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -140,7 +142,7 @@ class TestCommandParser(unittest.TestCase):
 
 			self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_bool_arg_special_value_false_pass(self):
+	def test_parse_cmd_with_bool_arg_special_value_false_pass(self):
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -154,12 +156,26 @@ class TestCommandParser(unittest.TestCase):
 
 			self.assertEqual(returned_command, expected_command)
 
-	def test_parse_command_with_custom_class_arg_pass(self):
+	def test_parse_cmd_with_path_arg_pass(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Path](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', '/bin/sh'])
+		expected_command = RootCommand()
+		expected_command.arg.value = Path('/', 'bin', 'sh')
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_custom_class_arg_two_kwargs_pass(self):
 
 		class Coordinates:
 			def __init__(self, x: float, y: float):
 				self.x = x
 				self.y = y
+			def __eq__(self, other):
+				return self.x == other.x and self.y == other.y
 
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
@@ -167,15 +183,146 @@ class TestCommandParser(unittest.TestCase):
 
 		returned_command = CommandParser(RootCommand).parse(['--arg', 'x=5,y=7'])
 		expected_command = RootCommand()
-		expected_command.arg.value = Coordinates(x=5, y=7)
+		expected_command.arg.value = Coordinates(x=5.0, y=7.0)
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_custom_class_arg_two_kwargs_one_arg_pass(self):
+		
+		class Label:
+			def __init__(self, name: str, x: float, y: float):
+				self.name = name
+				self.x = x
+				self.y = y
+			def __eq__(self, other):
+				return self.name == other.name and self.x == other.x and self.y and other.y
 
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Label](name='arg', display_name='Argument', description='', required=False)
 
+		returned_command = CommandParser(RootCommand).parse(['--arg', 'center,x=5,y=7'])
+		expected_command = RootCommand()
+		expected_command.arg.value = Label('center', x=5.0, y=7.0)
 
+		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_subcommand_no_arg_pass(self):
+	def test_parse_cmd_with_custom_class_arg_one_string_arg_pass(self):
+
+		class Robot:
+			def __init__(self, name: str):
+				self.name = name
+			def __eq__(self, other):
+				return self.name == other.name
+		
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Robot](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', 'butter'])
+		expected_command = RootCommand()
+		expected_command.arg.value = Robot('butter')
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_custom_class_arg_one_int_arg_pass(self):
+
+		class Counter:
+			def __init__(self, count: int):
+				self.count = count
+			def __eq__(self, other):
+				return self.count == other.count
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Counter](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', '5555'])
+		expected_command = RootCommand()
+		expected_command.arg.value = Counter(5555)
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_custom_class_arg_two_path_arg_pass(self):
+
+		class TwoPath:
+			def __init__(self, a: Path, b: Path):
+				self.a = a
+				self.b = b
+			def __eq__(self, other):
+				return self.a == other.a and self.b == other.b
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[TwoPath](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', './a/,./b/'])
+		expected_command = RootCommand()
+		expected_command.arg.value = TwoPath(Path('.', 'a'), Path('.', 'b'))
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_custom_class_arg_escape_equal_arg_pass(self):
+
+		class Book:
+			def __init__(self, text: str):
+				self.text = text
+			def __eq__(self, other):
+				return self.text == other.text
+			def __repr__(self):
+				return self.text
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Book](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', 'text=\=\=\=\='])
+		expected_command = RootCommand()
+		expected_command.arg.value = Book(text='====')
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_custom_class_arg_escape_comma_arg_pass(self):
+
+		class Robot:
+			def __init__(self, name: str):
+				self.name = name
+			def __eq__(self, other):
+				return self.name == other.name
+			def __repr__(self):
+				return self.name
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Robot](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', 'name=Zurbafo\, Destroyer of zoop'])
+		expected_command = RootCommand()
+		expected_command.arg.value = Robot(name='Zurbafo, Destroyer of zoop')
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_custom_class_arg_empty_arg_pass(self):
+
+		class Robot:
+			def __init__(self, name: str):
+				self.name = name
+			def __eq__(self, other):
+				return self.name == other.name
+			def __repr__(self):
+				return self.name
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[Robot](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', ''])
+		expected_command = RootCommand()
+		expected_command.arg.value = Robot(name='')
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_subcmd_no_arg_pass(self):
 
 		class TestCommand(Command):
 			command_details = CommandDetails(name='test', display_name='', description='')
@@ -189,7 +336,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_nested_subcommand_no_arg_pass(self):
+	def test_parse_nested_subcmd_no_arg_pass(self):
 
 		class Test4Command(Command):
 			command_details = CommandDetails(name='test4', display_name='', description='')
@@ -215,7 +362,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_subcommand_with_string_arg_pass(self):
+	def test_parse_subcmd_with_string_arg_pass(self):
 
 		class TestCommand(Command):
 			command_details = CommandDetails(name='test', display_name='', description='')
@@ -232,7 +379,7 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
-	def test_parse_subcommand_with_int_arg_pass(self):
+	def test_parse_subcmd_with_int_arg_pass(self):
 
 		class TestCommand(Command):
 			command_details = CommandDetails(name='test', display_name='', description='')

@@ -89,6 +89,10 @@ class Command:
 		
 		return self.get_arguments() == other.get_arguments()
 
+	def __repr__(self) -> str:
+		arguments = ' '.join([ f'{a.name}:{a.value}' for a in self.get_arguments()])
+		return self.command_details.name + '(' + arguments + ')'
+
 	def run(self):
 		help = getattr(self, 'help')
 		if help in Command.__subclasses__():
@@ -120,7 +124,7 @@ class Command:
 		if self._parent_command == None:
 			return self.command_details.display_name
 
-		return self._parent_command.get_full_command_display_name() + " " + self.command_details.display_name
+		return self._parent_command.get_full_command_display_name() + " > " + self.command_details.display_name
 	
 	def get_full_command_name(self) -> str:
 		if self._parent_command == None:
