@@ -11,26 +11,26 @@ from arcommander.models import Command, Argument
 class CommandParser:
 	def __init__(self, command: Type[Command], parent_command: Command = None) -> None:
 		self.command = command()
+		self.command._parent_command = parent_command
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
 
 	def parse(self, args: Union[str, list[str]]) -> Command:
-		print(f'I would parse {args}')
 
 		# make sure it's a list
 		if type(args) == str:
 			args = args.strip().split()
 
-		# if no arguments, return now
-		if len(args) == 0:
-			return self.command
+		print(f'I would parse {args}')
 
 		# check if first argument is a sub command
-		sub_command = self.get_matching_sub_command(args[0])
+		sub_command = None
+		if len(args) > 0:
+			sub_command = self.get_matching_sub_command(args[0])
 		
 		# if it is a sub command, pass it down
 		if sub_command != None:
-			return CommandParser(sub_command).parse(args[1:])
+			return CommandParser(sub_command, parent_command=self.command).parse(args[1:])
 
 		# go through the arguments and find their values
 
@@ -69,9 +69,14 @@ class CommandParser:
 
 			print(f'ARGUMENT {argument.display_name} : {argument.value}')
 
-		# todo are required satisfied?
+		self.check_required()
 
 		return self.command
+
+	def check_required(self):
+		for arg in self._arguments:
+			if arg.required == True and arg.value is None:
+				raise Exception(f'Missing required argument {arg.name}')
 
 	def string_to_primitive_instance(self, string_value: str, t: Type) -> object:
 		"""Converts a string to an instance of a given type"""
@@ -88,12 +93,6 @@ class CommandParser:
 		if t == float:
 			return float(string_value)
 
-		if t == Path:
-			return Path(string_value)
-
-		if t in Enum.__subclasses__():
-			return t[string_value]
-		
 		return None
 
 	def string_to_known_instance(self, string_value: str, t: Type) -> object:

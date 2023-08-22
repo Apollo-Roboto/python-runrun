@@ -322,6 +322,27 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_required_arg_pass(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', 'a test value'])
+		expected_command = RootCommand()
+		expected_command.arg.value = 'a test value'
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_missing_required_arg_fail(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
+	
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand).parse([])
+
 	def test_parse_subcmd_no_arg_pass(self):
 
 		class TestCommand(Command):
