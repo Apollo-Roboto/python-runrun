@@ -193,8 +193,35 @@ class CommandParser:
 			args[i] = instanced_value
 
 		return t(*args, **kwargs)
+	
+	def string_to_list_instance(self, string_value: str, t: list[type]) -> list[object]:
+		# split at all comma unless escaped
+		args = re.split(r'(?<!\\),', string_value)
+
+		for i, arg in enumerate(args):
+			# replace escaped comma to comma
+			arg = arg.replace('\,', ',')
+
+			# get type (default to str if not there)
+			type = str
+			if len(typing.get_args(t)) > 0:
+				type = typing.get_args(t)[0]
+
+			args[i] = self.string_to_primitive_instance(arg, type)
+
+			if args[i] != None:
+				continue
+
+			args[i] = self.string_to_known_instance(arg, type)
+
+		return args
 
 	def set_value_to_argument(self, argument: Argument, value: str):
+
+		# handle lists
+		if typing.get_origin(argument.type) == list:
+			argument.value = self.string_to_primitive_list_instance(value, argument.type)
+			return
 
 		argument.value = self.string_to_primitive_instance(value, argument.type)
 
