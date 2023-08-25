@@ -431,7 +431,7 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_list_of_int_arg_pass(self):
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
-			things = Argument[list[int]](name='things', display_name='Things', description='', required=False, value=0)
+			things = Argument[list[int]](name='things', display_name='Things', description='', required=False, value=[])
 		
 		returned_command = CommandParser(RootCommand).parse(['--things', '1,3,3,7'])
 		expected_command = RootCommand()
@@ -446,10 +446,47 @@ class TestCommandParser(unittest.TestCase):
 			C = 3
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
-			things = Argument[list[TestEnum]](name='things', display_name='Things', description='', required=False, value=0)
+			things = Argument[list[TestEnum]](name='things', display_name='Things', description='', required=False, value=[])
 
 		returned_command = CommandParser(RootCommand).parse(['--things', 'A,B,B,C'])
 		expected_command = RootCommand()
 		expected_command.things.value = [TestEnum.A,TestEnum.B,TestEnum.B,TestEnum.C]
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_dict_of_str_str_arg_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			things = Argument[dict[str,str]](name='things', display_name='Things', description='', required=False, value={})
+		
+		returned_command = CommandParser(RootCommand).parse(['--things', 'name=Wabla,last_name=Forfafui'])
+		expected_command = RootCommand()
+		expected_command.things.value = {'name':'Wabla', 'last_name':'Forfafui'}
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_dict_of_str_int_arg_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			things = Argument[dict[str,int]](name='things', display_name='Things', description='', required=False, value={})
+		
+		returned_command = CommandParser(RootCommand).parse(['--things', 'a=1,b=3,c=3,d=7'])
+		expected_command = RootCommand()
+		expected_command.things.value = {'a':1, 'b':3, 'c':3, 'd':7}
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_dict_of_str_enum_arg_pass(self):
+		class TestEnum(Enum):
+			A = 1
+			B = 2
+			C = 3
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			things = Argument[dict[str,TestEnum]](name='things', display_name='Things', description='', required=False, value={})
+
+		returned_command = CommandParser(RootCommand).parse(['--things', 'Liwia=A,Clementia=B,Jia=B,Pomare=C'])
+		expected_command = RootCommand()
+		expected_command.things.value = {'Liwia':TestEnum.A, 'Clementia':TestEnum.B, 'Jia':TestEnum.B, 'Pomare':TestEnum.C}
 
 		self.assertEqual(returned_command, expected_command)

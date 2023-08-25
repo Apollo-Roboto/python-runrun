@@ -198,14 +198,14 @@ class CommandParser:
 		# split at all comma unless escaped
 		args = re.split(r'(?<!\\),', string_value)
 
+		# get type (default to str if not there)
+		type = str
+		if len(typing.get_args(t)) > 0:
+			type = typing.get_args(t)[0]
+
 		for i, arg in enumerate(args):
 			# replace escaped comma to comma
 			arg = arg.replace('\,', ',')
-
-			# get type (default to str if not there)
-			type = str
-			if len(typing.get_args(t)) > 0:
-				type = typing.get_args(t)[0]
 
 			args[i] = self.string_to_primitive_instance(arg, type)
 
@@ -216,11 +216,63 @@ class CommandParser:
 
 		return args
 
+	def string_to_dict_instance(self, string_value: str, t: dict[str, type]) -> dict[str, type]:
+
+		kwargs = {}
+
+		# split at all comma unless escaped
+		args = re.split(r'(?<!\\),', string_value)
+
+		# get type of the key (default to str if not there)
+		key_type = str
+		if len(typing.get_args(t)) > 0:
+			key_type = typing.get_args(t)[0]
+
+		# get type of the value (default to str if not there)
+		value_type = str
+		if len(typing.get_args(t)) > 1:
+			value_type = typing.get_args(t)[1]
+
+		for i, arg in enumerate(args):
+			# replace escaped comma to comma
+			arg = arg.replace('\,', ',')
+			
+			# split at equal unless escaped
+			key_value = re.split(r'(?<!\\)=', arg, maxsplit=1)
+
+			# if it did split, it's a keyword argument
+			if len(key_value) > 1:
+
+				# replace escaped equals to equals
+				key = key_value[0].replace('\=', '=')
+				value = key_value[1].replace('\=', '=')
+			
+			# otherwise it's not valid
+			else:
+				pass
+			
+			key_value[0] = self.string_to_primitive_instance(key, key_type)
+			if key_value[0] == None:
+				key_value[0] = self.string_to_known_instance(key, key_type)
+
+			key_value[1] = self.string_to_primitive_instance(value, value_type)
+			if key_value[1] == None:
+				key_value[1] = self.string_to_known_instance(value, value_type)
+
+			kwargs.update({key_value[0]:key_value[1]})
+
+		return kwargs
+
 	def set_value_to_argument(self, argument: Argument, value: str):
 
 		# handle lists
 		if typing.get_origin(argument.type) == list:
-			argument.value = self.string_to_primitive_list_instance(value, argument.type)
+			argument.value = self.string_to_list_instance(value, argument.type)
+			return
+		
+		# handle dicts
+		if typing.get_origin(argument.type) == dict:
+			argument.value = self.string_to_dict_instance(value, argument.type)
 			return
 
 		argument.value = self.string_to_primitive_instance(value, argument.type)
