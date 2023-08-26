@@ -24,6 +24,8 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	# region parse method
+
 	def test_parse_cmd_with_int_arg_pass(self):
 
 		class RootCommand(Command):
@@ -614,3 +616,62 @@ class TestCommandParser(unittest.TestCase):
 		expected_command.things.value = {'Liwia':TestEnum.A, 'Clementia':TestEnum.B, 'Jia':TestEnum.B, 'Pomare':TestEnum.C}
 
 		self.assertEqual(returned_command, expected_command)
+
+	# endregion
+
+	# region validate_command method
+
+	def test_validate_command_duplicate_position_fail(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=0, name='arg2', display_name='Argument 2', description='', required=False)
+
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand)
+
+	def test_validate_command_position_not_starting_at_zero_fail(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=1, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=2, name='arg2', display_name='Argument 2', description='', required=False)
+
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand)
+
+	def test_validate_command_position_number_skip_fail(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=2, name='arg2', display_name='Argument 2', description='', required=False)
+
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand)
+
+	def test_validate_command_position_only_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
+
+		CommandParser(RootCommand)
+
+	def test_validate_command_position_with_args_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
+			arg3 = Argument[str](name='arg3', display_name='Argument 3', description='', required=False)
+			arg4 = Argument[str](name='arg4', display_name='Argument 4', description='', required=False)
+
+		CommandParser(RootCommand)
+
+	def test_validate_command_no_position_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](name='arg2', display_name='Argument 2', description='', required=False)
+
+		CommandParser(RootCommand)
+
+	# endregion

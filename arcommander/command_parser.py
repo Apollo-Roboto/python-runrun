@@ -15,6 +15,22 @@ class CommandParser:
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
 
+		self.validate_command()
+
+	def validate_command(self):
+
+		# validate positions are in order and not duplicated
+		counter = 0
+
+		positional_arguments = filter(lambda x: x.position != None, self._arguments)
+		positional_arguments = sorted(positional_arguments, key=lambda x: x.position)
+
+		for arg in positional_arguments:
+			if arg.position == counter:
+				counter += 1
+			else:
+				raise Exception('Positions must be incremental and unique, starting from 0')
+
 	def parse(self, args: Union[str, list[str]]) -> Command:
 
 		# make sure it's a list
