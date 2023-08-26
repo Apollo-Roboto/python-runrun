@@ -27,13 +27,14 @@ class CommandParser:
 		sub_command = None
 		if len(args) > 0:
 			sub_command = self.get_matching_sub_command(args[0])
-		
+
 		# if it is a sub command, pass it down
 		if sub_command != None:
 			return CommandParser(sub_command, parent_command=self.command).parse(args[1:])
 
 		# go through the arguments and find their values
 
+		positional_i = 0 # track the number of the positional
 		i = -1
 		while(True):
 			i += 1
@@ -42,24 +43,29 @@ class CommandParser:
 			arg = args[i]
 
 			argument = self.get_matching_argument_by_name(arg)
-			
+
 			if argument == None:
-				argument = self.get_matching_argument_by_position(i)
-			
+				argument = self.get_matching_argument_by_position(positional_i)
+
 			# invalid argument
 			if argument == None:
-				raise Exception('Invalid argument name')
+				raise Exception(f'Invalid argument name \'{arg}\'')
+
+			is_positional = argument.position != None
+			if is_positional:
+				positional_i += 1
 
 			# is there a value?
 			value = None
-			if i+1 < len(args):
-
+			if not is_positional and i+1 < len(args):
 				value = args[i+1]
+			elif is_positional:
+				value = arg
 
 			# boolean argument could not have a value
 			if value != None and argument.type == bool and value.startswith('-'):
 				value = None
-			else:
+			elif not is_positional:
 				i += 1
 
 			if value != None:
@@ -279,16 +285,18 @@ class CommandParser:
 
 		if argument.value != None:
 			return
-		
+
 		argument.value = self.string_to_known_instance(value, argument.type)
 
 		if argument.value != None:
 			return
-		
+
 		argument.value = self.string_to_unknown_instance(value, argument.type)
 
 	def get_matching_argument_by_position(self, pos: int) -> Optional[Argument]:
-		pass
+		for arg in self._arguments:
+			if arg.position == pos:
+				return arg
 
 	def get_matching_argument_by_name(self, arg: str) -> Optional[Argument]:
 		arg = arg.lower()

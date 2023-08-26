@@ -322,6 +322,130 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_str_positional_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[str](position=0, name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['The color is yellow'])
+		expected_command = RootCommand()
+		expected_command.arg.value = 'The color is yellow'
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_bool_positional_true_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['true'])
+		expected_command = RootCommand()
+		expected_command.arg.value = True
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_bool_positional_false_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['False'])
+		expected_command = RootCommand()
+		expected_command.arg.value = False
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_list_of_str_positional_false_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[list[str]](position=0, name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['one,two,three'])
+		expected_command = RootCommand()
+		expected_command.arg.value = ['one', 'two', 'three']
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_bool_positional_missing_fail(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=True)
+
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand).parse([])
+
+	def test_parse_cmd_with_str_positional_missing_fail(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[str](position=0, name='arg', display_name='Argument', description='', required=True)
+
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand).parse([])
+
+	def test_parse_cmd_with_str_positional_and_arg_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](name='arg2', display_name='Argument 2', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['arg1', '--arg2', 'arg2'])
+		expected_command = RootCommand()
+		expected_command.arg1.value = 'arg1'
+		expected_command.arg2.value = 'arg2'
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_multiple_int_positional_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[int](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[int](position=1, name='arg2', display_name='Argument 2', description='', required=False)
+			arg3 = Argument[int](position=2, name='arg3', display_name='Argument 3', description='', required=False)
+			arg4 = Argument[int](position=3, name='arg4', display_name='Argument 4', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['1', '2', '3', '4'])
+		expected_command = RootCommand()
+		expected_command.arg1.value = 1
+		expected_command.arg2.value = 2
+		expected_command.arg3.value = 3
+		expected_command.arg4.value = 4
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_multiple_int_positional_and_arg_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
+			arg3 = Argument[str](name='arg3', display_name='Argument 3', description='', required=False)
+			arg4 = Argument[str](name='arg4', display_name='Argument 4', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['arg1', 'arg2', '--arg3', 'arg3', '--arg4', 'arg4'])
+		expected_command = RootCommand()
+		expected_command.arg1.value = 'arg1'
+		expected_command.arg2.value = 'arg2'
+		expected_command.arg3.value = 'arg3'
+		expected_command.arg4.value = 'arg4'
+
+		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_misplaced_positional_and_arg_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
+			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
+			arg3 = Argument[str](name='arg3', display_name='Argument 3', description='', required=False)
+			arg4 = Argument[str](name='arg4', display_name='Argument 4', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['arg1', '--arg3', 'arg3', 'arg2', '--arg4', 'arg4'])
+		expected_command = RootCommand()
+		expected_command.arg1.value = 'arg1'
+		expected_command.arg2.value = 'arg2'
+		expected_command.arg3.value = 'arg3'
+		expected_command.arg4.value = 'arg4'
+
+		self.assertEqual(returned_command, expected_command)
+
 	def test_parse_cmd_with_required_arg_pass(self):
 
 		class RootCommand(Command):

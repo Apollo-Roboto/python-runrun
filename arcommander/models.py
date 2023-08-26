@@ -17,8 +17,10 @@ class Argument(Generic[T]):
 		aliases: list[str] = [],
 		short: Optional[str] = None,
 		value: Optional[T] = None,
+		position: Optional[int] = None,
+		# str_to_type: Optional[Callable[[str], T]] = None,
 	) -> None:
-		
+
 		self.name = name
 		self.display_name = display_name
 		self.description = description
@@ -26,10 +28,11 @@ class Argument(Generic[T]):
 		self.aliases = aliases
 		self.short = short
 		self.value = value
+		self.position = position
+
+		# self.str_to_type = str_to_type
 
 		self._type: Type[T] = None
-		
-		# position: Optional[int] = None
 
 	@property
 	def type(self) -> Type[T]:
