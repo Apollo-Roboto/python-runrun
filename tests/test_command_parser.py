@@ -690,4 +690,17 @@ class TestCommandParser(unittest.TestCase):
 
 		CommandParser(RootCommand)
 
+	def test_validate_command_has_details_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+
+		CommandParser(RootCommand)
+
+	def test_validate_command_has_no_details_fail(self):
+		class RootCommand(Command):
+			pass
+
+		with self.assertRaises(Exception):
+			CommandParser(RootCommand)
+
 	# endregion

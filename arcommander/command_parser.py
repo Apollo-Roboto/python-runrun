@@ -19,6 +19,10 @@ class CommandParser:
 
 	def validate_command(self):
 
+		# command contains a command_details
+		if self.command.command_details == None:
+			raise Exception('A command must define the command_details attribute')
+
 		# validate positions are in order and not duplicated
 		counter = 0
 
@@ -132,7 +136,7 @@ class CommandParser:
 		return None
 	
 	def string_to_unknown_instance(self, string_value: str, t: Type) -> object:
-		"""Attempts at intanciating an object from the given type"""
+		"""Attempts at instanciating an object of the given class from a string of arguments"""
 
 		#
 		# the format of the value should look something like this:
