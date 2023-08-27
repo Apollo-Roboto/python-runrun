@@ -102,6 +102,22 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_enum_arg_ignore_case_pass(self):
+		class TestEnum(Enum):
+			A = 1
+			B = 2
+			C = 3
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[TestEnum](name='arg', display_name='Argument', description='', required=False)
+
+		returned_command = CommandParser(RootCommand).parse(['--arg', 'b'])
+		expected_command = RootCommand()
+		expected_command.arg.value = TestEnum.B
+
+		self.assertEqual(returned_command, expected_command)
+
 	def test_parse_cmd_with_bool_arg_no_value_pass(self):
 
 		class RootCommand(Command):

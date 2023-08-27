@@ -124,7 +124,10 @@ class CommandParser:
 			return Path(string_value)
 
 		if t in Enum.__subclasses__():
-			return t[string_value]
+			# get value ignoring case
+			for member in t.__members__.keys():
+				if member.lower() == string_value.lower():
+					return t[member]
 		
 		return None
 	
