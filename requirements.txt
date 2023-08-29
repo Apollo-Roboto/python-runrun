@@ -1,6 +1,2 @@
-PyYAML
-jsonschema
-python-dotenv
-requests
 pylint
 colorama

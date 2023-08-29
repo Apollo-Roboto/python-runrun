@@ -9,8 +9,8 @@ from pathlib import Path
 from arcommander.models import Command, Argument
 
 class CommandParser:
-	def __init__(self, command: Type[Command], parent_command: Command = None) -> None:
-		self.command = command()
+	def __init__(self, command: Command, parent_command: Command = None) -> None:
+		self.command = command
 		self.command._parent_command = parent_command
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
@@ -344,7 +344,7 @@ class CommandParser:
 				
 		return None
 				
-	def get_matching_sub_command(self, arg: str) -> Optional[Type[Command]]:
+	def get_matching_sub_command(self, arg: str) -> Optional[Command]:
 		arg = arg.lower()
 
 		for sub_command in self._sub_commands:

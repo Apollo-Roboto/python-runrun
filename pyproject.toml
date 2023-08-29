@@ -3,27 +3,35 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = ""
+name = "arcommander"
 version = "0.0.1"
 authors = [
-  { name="", email="" },
+  { name="Apollo Roboto", email="apollo_roboto@outlook.com" },
 ]
 description  = ""
 readme = "README.md"
 license = "MIT"
 keywords = []
 dependencies = [
-	"PyYAML",
-	"python-dotenv",
-	"jsonschema",
-	"requests",
+	"colorama",
 ]
 requires-python = ">=3.10"
 classifiers = [
 	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
 	"License :: OSI Approved :: MIT License",
 	"Operating System :: OS Independent",
+	"Environment :: Console",
+	"Intended Audience :: Developers",
+	"Natural Language :: English",
+	"Topic :: Software Development",
+	"Topic :: Software Development :: Libraries",
+	"Topic :: Terminals",
+	"Topic :: Text Processing",
+	"Topic :: Utilities",
+	"Typing :: Typed"
 ]
 
 [project.urls]
-"Source" = "https://github.com/"
+"Source" = "https://github.com/Apollo-Roboto/python-arcommander"

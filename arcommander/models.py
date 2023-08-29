@@ -43,7 +43,7 @@ class Argument(Generic[T]):
 	def __eq__(self, other: object) -> bool:
 		if self.__class__ != other.__class__:
 			return False
-		
+
 		return self.value == other.value
 
 class CommandDetails:
@@ -58,7 +58,7 @@ class CommandDetails:
 		self.display_name = display_name
 		self.description = description
 		self.aliases = aliases
-	
+
 	def __eq__(self, other: object) -> bool:
 		if self.__class__ != other.__class__:
 			return False
@@ -67,7 +67,7 @@ class CommandDetails:
 			self.display_name == other.display_name and
 			self.description == other.description and
 			self.aliases == other.aliases
-		) 
+		)
 
 class Command:
 
@@ -101,14 +101,12 @@ class Command:
 		if help in Command.__subclasses__():
 			help(self).run()
 
-	def get_sub_commands(self) -> list[Type['Command']]:
+	def get_sub_commands(self) -> list['Command']:
 		sub_commands = []
 
 		for key, value in inspect.getmembers(self):
-			if key == '__class__':
-				continue
 
-			if value in Command.__subclasses__():
+			if isinstance(value, Command):
 				sub_commands.append(value)
 
 		return sub_commands
