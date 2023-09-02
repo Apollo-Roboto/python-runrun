@@ -13,7 +13,7 @@ class Argument(Generic[T]):
 		name: str,
 		display_name: str,
 		description: str,
-		required: bool,
+		required: bool = False,
 		aliases: list[str] = [],
 		short: Optional[str] = None,
 		value: Optional[T] = None,
@@ -49,10 +49,10 @@ class Argument(Generic[T]):
 class CommandDetails:
 
 	def __init__(self, *,
-	      name: str,
-		  display_name: str,
-		  description: str,
-		  aliases: list[str] = []
+		name: str,
+		display_name: str,
+		description: str,
+		aliases: list[str] = []
 	):
 		self.name = name
 		self.display_name = display_name
@@ -72,11 +72,9 @@ class CommandDetails:
 class Command:
 
 	command_details: CommandDetails
-	_parent_command: Optional['Command'] = None
+	context: 'Context' = None
 
-	def __init__(self, parent_command: Optional['Command'] = None):
-		self._parent_command = parent_command
-
+	def __init__(self):
 		# instanciate all arguments at the instance level
 		for key, value in inspect.getmembers(self):
 
@@ -93,8 +91,9 @@ class Command:
 		return self.get_arguments() == other.get_arguments()
 
 	def __repr__(self) -> str:
-		arguments = ' '.join([ f'{a.name}:{a.value}' for a in self.get_arguments()])
-		return self.command_details.name + '(' + arguments + ')'
+		arguments = ','.join([ f'{a.name}:{a.value}' for a in self.get_arguments()])
+		sub_commands = ','.join([ f'{a.command_details.name}' for a in self.get_sub_commands()])
+		return f'{self.__class__.__name__}(name={self.command_details.name}, args={arguments}, sub_cmd={sub_commands})'
 
 	def run(self):
 		help = getattr(self, 'help')
@@ -120,15 +119,41 @@ class Command:
 				arguments.append(value)
 
 		return arguments
-	
+
 	def get_full_command_display_name(self) -> str:
+		# TODO: this is only visual, should move to help
 		if self._parent_command == None:
 			return self.command_details.display_name
 
 		return self._parent_command.get_full_command_display_name() + " > " + self.command_details.display_name
 	
 	def get_full_command_name(self) -> str:
+		# TODO: this is only visual, should move to help
 		if self._parent_command == None:
 			return self.command_details.name
 
 		return self._parent_command.get_full_command_name() + " " + self.command_details.name
+
+class Context:
+	# application: Application
+	def __init__(self,
+		root_command: Command = None,
+		original_arguments: list[str] = None,
+		scoped_arguments: list[str] = None,
+		parent_command: Optional[Command] = None,
+	) -> None:
+		self.root_command = root_command
+		self.original_arguments = original_arguments
+		self.scoped_arguments = scoped_arguments
+		self.parent_command = parent_command
+
+	def __eq__(self, other):
+		if self.__class__ != other.__class__:
+			return False
+		return (
+			self.root_command == other.root_command and
+			self.original_arguments == other.original_arguments and
+			self.scoped_arguments == other.scoped_arguments and
+			self.parent_command == other.parent_command
+		)
+

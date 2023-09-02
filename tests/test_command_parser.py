@@ -3,7 +3,7 @@ from enum import Enum
 from pathlib import Path
 from dataclasses import dataclass
 
-from arcommander.models import Argument, Command, CommandDetails
+from arcommander.models import Argument, Command, CommandDetails, Context
 from arcommander.command_parser import CommandParser
 
 BLANK_DETAILS = CommandDetails(name='', display_name='', description='')
@@ -702,5 +702,69 @@ class TestCommandParser(unittest.TestCase):
 
 		with self.assertRaises(Exception):
 			CommandParser(RootCommand())
+
+	# endregion
+
+	# region context
+
+	def test_context_has_root_command_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+
+		returned_command = CommandParser(RootCommand()).parse([])
+
+		self.assertEqual(returned_command.context.root_command, RootCommand())
+
+	def test_context_root_cmd_has_no_parent_command_pass(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+
+		returned_command = CommandParser(RootCommand()).parse([])
+
+		self.assertEqual(returned_command.context.parent_command, None)
+
+	def test_context_sub_cmd_has_parent_command_pass(self):
+		class SubCommand2(Command):
+			command_details = CommandDetails(name='sub2', display_name='Sub Command 2', description='A sub command')
+		class SubCommand1(Command):
+			command_details = CommandDetails(name='sub1', display_name='Sub Command 1', description='A sub command')
+			sub = SubCommand2()
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			sub = SubCommand1()
+
+		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2'])
+
+		self.assertEqual(returned_command.context.parent_command, SubCommand1())
+
+	def test_context_sub_cmd_original_arguments_pass(self):
+		class SubCommand2(Command):
+			command_details = CommandDetails(name='sub2', display_name='Sub Command 2', description='A sub command')
+			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='A test argument')
+		class SubCommand1(Command):
+			command_details = CommandDetails(name='sub1', display_name='Sub Command 1', description='A sub command')
+			sub = SubCommand2()
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			sub = SubCommand1()
+
+		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2', '--arg1', 'test'])
+
+		self.assertEqual(returned_command.context.original_arguments, ['sub1', 'sub2', '--arg1', 'test'])
+
+	def test_context_sub_cmd_scoped_arguments_pass(self):
+		class SubCommand2(Command):
+			command_details = CommandDetails(name='sub2', display_name='Sub Command 2', description='A sub command')
+			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='A test argument')
+		class SubCommand1(Command):
+			command_details = CommandDetails(name='sub1', display_name='Sub Command 1', description='A sub command')
+			sub = SubCommand2()
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			sub = SubCommand1()
+
+		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2', '--arg1', 'test'])
+
+		self.assertEqual(returned_command.context.scoped_arguments, ['--arg1', 'test'])
 
 	# endregion

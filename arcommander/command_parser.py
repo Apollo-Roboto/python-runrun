@@ -6,14 +6,26 @@ import json
 import inspect
 from pathlib import Path
 
-from arcommander.models import Command, Argument
+from arcommander.models import Command, Argument, Context
 
 class CommandParser:
-	def __init__(self, command: Command, parent_command: Command = None) -> None:
+	def __init__(self, command: Command, parent_command: Command = None, context: Context = None) -> None:
 		self.command = command
-		self.command._parent_command = parent_command
+		# self.command._parent_command = parent_command
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
+
+		# create context if not given
+		self.command.context = context
+		if self.command.context == None:
+			self.command.context = Context()
+
+		# set the parent command
+		self.command.context.parent_command = parent_command
+
+		# set the root command
+		if self.command.context.root_command == None:
+			self.command.context.root_command = command
 
 		self.validate_command()
 
@@ -43,6 +55,10 @@ class CommandParser:
 
 		print(f'I would parse {args}')
 
+		# if never set before, set the arguments
+		if self.command.context.original_arguments == None:
+			self.command.context.original_arguments = args
+
 		# check if first argument is a sub command
 		sub_command = None
 		if len(args) > 0:
@@ -50,7 +66,10 @@ class CommandParser:
 
 		# if it is a sub command, pass it down
 		if sub_command != None:
-			return CommandParser(sub_command, parent_command=self.command).parse(args[1:])
+			return CommandParser(sub_command, parent_command=self.command, context=self.command.context).parse(args[1:])
+
+		# set the scoped argumetns for this command
+		self.command.context.scoped_arguments = args
 
 		# go through the arguments and find their values
 

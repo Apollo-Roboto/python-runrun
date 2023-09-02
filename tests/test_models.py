@@ -1,6 +1,6 @@
 import unittest
 
-from arcommander.models import Argument, Command, CommandDetails
+from arcommander.models import Argument, Command, CommandDetails, Context
 
 class TestCommand(unittest.TestCase):
 
@@ -71,3 +71,43 @@ class TestCommand(unittest.TestCase):
 		]
 
 		self.assertEqual(returned_commands, expected_commands)
+
+class TestContext(unittest.TestCase):
+	
+	def test_equal_pass(self):
+		class TCommand(Command):
+			command_details = CommandDetails(name='t',display_name='T',description='A test command')
+
+		context1 = Context(
+			original_arguments=['add', '1', '2'],
+			scoped_arguments=['1', '2'],
+			root_command=TCommand()
+		)
+
+		context2 = Context(
+			original_arguments=['add', '1', '2'],
+			scoped_arguments=['1', '2'],
+			root_command=TCommand()
+		)
+
+		self.assertEqual(context1, context2)
+
+	def test_unequal_pass(self):
+		class TCommand(Command):
+			command_details = CommandDetails(name='t',display_name='T',description='A test command')
+
+		context1 = Context(
+			original_arguments=['add', '1', '2'],
+			scoped_arguments=['1', '2'],
+			root_command=TCommand(),
+			parent_command=TCommand(),
+		)
+
+		context2 = Context(
+			original_arguments=['multiply', '1', '2'],
+			scoped_arguments=['1', '2'],
+			root_command=TCommand(),
+			parent_command=TCommand(),
+		)
+
+		self.assertNotEqual(context1, context2)

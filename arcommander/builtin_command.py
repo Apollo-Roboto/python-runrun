@@ -42,14 +42,16 @@ class HelpCommand2(Command):
 	def print_json(self):
 		data = {}
 
-		arguments = self._parent_command.get_arguments()
-		sub_commands = self._parent_command.get_sub_commands()
-		
+		parent_command = self.context.parent_command
+		root_command = self.context.root_command
+		arguments = parent_command.get_arguments()
+		sub_commands = parent_command.get_sub_commands()
+
 		data['command'] = {
-			'name': self._parent_command.command_details.name,
-			'display_name': self._parent_command.command_details.display_name,
-			'description': self._parent_command.command_details.description,
-			'aliases': self._parent_command.command_details.aliases,
+			'name': parent_command.command_details.name,
+			'display_name': parent_command.command_details.display_name,
+			'description': parent_command.command_details.description,
+			'aliases': parent_command.command_details.aliases,
 		}
 
 		data['arguments'] = [
