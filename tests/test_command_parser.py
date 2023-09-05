@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from arcommander.models import Argument, Command, CommandDetails, Context
 from arcommander.command_parser import CommandParser
+from arcommander.exceptions import CLIException, ParserException, ValidationException
 
 BLANK_DETAILS = CommandDetails(name='', display_name='', description='')
 
@@ -389,16 +390,16 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=True)
 
-		with self.assertRaises(Exception):
-			CommandParser(RootCommand).parse([])
+		with self.assertRaises(ParserException):
+			CommandParser(RootCommand()).parse([])
 
 	def test_parse_cmd_with_str_positional_missing_fail(self):
 		class RootCommand(Command):
 			command_details = BLANK_DETAILS
 			arg = Argument[str](position=0, name='arg', display_name='Argument', description='', required=True)
 
-		with self.assertRaises(Exception):
-			CommandParser(RootCommand).parse([])
+		with self.assertRaises(ParserException):
+			CommandParser(RootCommand()).parse([])
 
 	def test_parse_cmd_with_str_positional_and_arg_pass(self):
 		class RootCommand(Command):
@@ -482,8 +483,8 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
 	
-		with self.assertRaises(Exception):
-			CommandParser(RootCommand).parse([])
+		with self.assertRaises(ParserException):
+			CommandParser(RootCommand()).parse([])
 
 	def test_parse_subcmd_no_arg_pass(self):
 
@@ -643,7 +644,7 @@ class TestCommandParser(unittest.TestCase):
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=0, name='arg2', display_name='Argument 2', description='', required=False)
 
-		with self.assertRaises(Exception):
+		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
 
 	def test_validate_command_position_not_starting_at_zero_fail(self):
@@ -652,7 +653,7 @@ class TestCommandParser(unittest.TestCase):
 			arg1 = Argument[str](position=1, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=2, name='arg2', display_name='Argument 2', description='', required=False)
 
-		with self.assertRaises(Exception):
+		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
 
 	def test_validate_command_position_number_skip_fail(self):
@@ -661,7 +662,7 @@ class TestCommandParser(unittest.TestCase):
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=2, name='arg2', display_name='Argument 2', description='', required=False)
 
-		with self.assertRaises(Exception):
+		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
 
 	def test_validate_command_position_only_pass(self):
@@ -700,7 +701,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(Command):
 			pass
 
-		with self.assertRaises(Exception):
+		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
 
 	# endregion

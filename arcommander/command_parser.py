@@ -7,6 +7,7 @@ import inspect
 from pathlib import Path
 
 from arcommander.models import Command, Argument, Context
+from arcommander.exceptions import ParserException, ValidationException
 
 class CommandParser:
 	def __init__(self, command: Command, parent_command: Command = None, context: Context = None) -> None:
@@ -32,8 +33,8 @@ class CommandParser:
 	def validate_command(self):
 
 		# command contains a command_details
-		if self.command.command_details == None:
-			raise Exception('A command must define the command_details attribute')
+		if self.command.command_details is None:
+			raise ValidationException('A command must define the command_details attribute')
 
 		# validate positions are in order and not duplicated
 		counter = 0
@@ -45,7 +46,7 @@ class CommandParser:
 			if arg.position == counter:
 				counter += 1
 			else:
-				raise Exception('Positions must be incremental and unique, starting from 0')
+				raise ValidationException('Positions must be incremental and unique, starting from 0')
 
 	def parse(self, args: Union[str, list[str]]) -> Command:
 
@@ -88,7 +89,7 @@ class CommandParser:
 
 			# invalid argument
 			if argument == None:
-				raise Exception(f'Invalid argument name \'{arg}\'')
+				raise ParserException(f'Invalid argument name \'{arg}\'')
 
 			is_positional = argument.position != None
 			if is_positional:
@@ -121,7 +122,7 @@ class CommandParser:
 	def check_required(self):
 		for arg in self._arguments:
 			if arg.required == True and arg.value is None:
-				raise Exception(f'Missing required argument {arg.name}')
+				raise ParserException(f'Missing required argument {arg.name}')
 
 	def string_to_primitive_instance(self, string_value: str, t: Type) -> object:
 		"""Converts a string to an instance of a given type"""
