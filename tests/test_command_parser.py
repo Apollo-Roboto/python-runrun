@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from arcommander.models import Argument, Command, CommandDetails, Context
 from arcommander.command_parser import CommandParser
-from arcommander.exceptions import CLIException, ParserException, ValidationException
+from arcommander.exceptions import CLIException, ParserException, ValidationException, InvalidValueException, MissingArgumentException, UnknownArgumentException
 
 BLANK_DETAILS = CommandDetails(name='', display_name='', description='')
 
@@ -63,6 +63,15 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_invalid_bool_arg_fail(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
+
+		with self.assertRaises(InvalidValueException):
+			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
+
 	def test_parse_cmd_with_int_arg_pass(self):
 
 		class RootCommand(Command):
@@ -75,6 +84,15 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_invalid_int_arg_fail(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[int](name='arg', display_name='Argument', description='', required=False)
+
+		with self.assertRaises(InvalidValueException):
+			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
+
 	def test_parse_cmd_with_float_arg_pass(self):
 
 		class RootCommand(Command):
@@ -86,6 +104,15 @@ class TestCommandParser(unittest.TestCase):
 		expected_command.arg.value = 1515.5
 
 		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_invalid_float_arg_fail(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[float](name='arg', display_name='Argument', description='', required=False)
+
+		with self.assertRaises(InvalidValueException):
+			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
 
 	def test_parse_cmd_with_enum_arg_pass(self):
 		class TestEnum(Enum):
@@ -102,6 +129,19 @@ class TestCommandParser(unittest.TestCase):
 		expected_command.arg.value = TestEnum.B
 
 		self.assertEqual(returned_command, expected_command)
+
+	def test_parse_cmd_with_invalid_enum_arg_fail(self):
+		class TestEnum(Enum):
+			A = 1
+			B = 2
+			C = 3
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[TestEnum](name='arg', display_name='Argument', description='', required=False)
+
+		with self.assertRaises(InvalidValueException):
+			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
 
 	def test_parse_cmd_with_enum_arg_ignore_case_pass(self):
 		class TestEnum(Enum):
@@ -390,7 +430,7 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=True)
 
-		with self.assertRaises(ParserException):
+		with self.assertRaises(MissingArgumentException):
 			CommandParser(RootCommand()).parse([])
 
 	def test_parse_cmd_with_str_positional_missing_fail(self):
@@ -398,7 +438,7 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			arg = Argument[str](position=0, name='arg', display_name='Argument', description='', required=True)
 
-		with self.assertRaises(ParserException):
+		with self.assertRaises(MissingArgumentException):
 			CommandParser(RootCommand()).parse([])
 
 	def test_parse_cmd_with_str_positional_and_arg_pass(self):
@@ -483,8 +523,17 @@ class TestCommandParser(unittest.TestCase):
 			command_details = BLANK_DETAILS
 			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
 	
-		with self.assertRaises(ParserException):
+		with self.assertRaises(MissingArgumentException):
 			CommandParser(RootCommand()).parse([])
+
+	def test_parse_cmd_with_unknown_arg_fail(self):
+
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
+	
+		with self.assertRaises(UnknownArgumentException):
+			CommandParser(RootCommand()).parse(['shouldnotexists'])
 
 	def test_parse_subcmd_no_arg_pass(self):
 

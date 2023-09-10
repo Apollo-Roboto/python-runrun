@@ -7,7 +7,7 @@ import inspect
 from pathlib import Path
 
 from arcommander.models import Command, Argument, Context
-from arcommander.exceptions import ParserException, ValidationException
+from arcommander.exceptions import ParserException, ValidationException, UnknownArgumentException, MissingArgumentException, InvalidValueException
 
 class CommandParser:
 	def __init__(self, command: Command, parent_command: Command = None, context: Context = None) -> None:
@@ -54,8 +54,6 @@ class CommandParser:
 		if type(args) == str:
 			args = args.strip().split()
 
-		print(f'I would parse {args}')
-
 		# if never set before, set the arguments
 		if self.command.context.original_arguments == None:
 			self.command.context.original_arguments = args
@@ -89,7 +87,7 @@ class CommandParser:
 
 			# invalid argument
 			if argument == None:
-				raise ParserException(f'Invalid argument name \'{arg}\'')
+				raise UnknownArgumentException(command=self.command, unknown_argument=arg)
 
 			is_positional = argument.position != None
 			if is_positional:
@@ -109,20 +107,24 @@ class CommandParser:
 				i += 1
 
 			if value != None:
-				self.set_value_to_argument(argument, value)
+				try:
+					self.set_value_to_argument(argument, value)
+				except ValueError:
+					raise InvalidValueException(command=self.command, argument=argument, given_value=value)
 			elif argument.type == bool:
 				argument.value = True
-
-			print(f'ARGUMENT {argument.display_name} : {argument.value}')
 
 		self.check_required()
 
 		return self.command
 
 	def check_required(self):
+		required_missing: list[Argument] = []
 		for arg in self._arguments:
 			if arg.required == True and arg.value is None:
-				raise ParserException(f'Missing required argument {arg.name}')
+				required_missing.append(arg)
+		if len(required_missing) > 0:
+			raise MissingArgumentException(command=self.command, missing_arguments=required_missing)
 
 	def string_to_primitive_instance(self, string_value: str, t: Type) -> object:
 		"""Converts a string to an instance of a given type"""
@@ -131,7 +133,11 @@ class CommandParser:
 			return string_value
 
 		if t == bool:
-			return string_value.lower() in ['true', 'yes', 'yup', '👍', ':)', '😊', '1', 'positive', 'ok']
+			if string_value.lower() in ['true', 'yes', 'yup', '👍', ':)', '😊', '1', 'positive', 'ok']:
+				return True
+			if string_value.lower() in ['false', 'no', 'nah', '👎', ':(', '☹', '0', 'negative']:
+				return False
+			raise ValueError('Invalid boolean value')
 
 		if t == int:
 			return int(string_value)

@@ -71,7 +71,7 @@ class CommandDetails:
 
 class Command:
 
-	command_details: CommandDetails
+	command_details: CommandDetails = None
 	context: 'Context' = None
 
 	def __init__(self):

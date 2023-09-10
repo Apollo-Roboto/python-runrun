@@ -1,2 +1,3 @@
 pylint
 colorama
+Levenshtein==0.21.1
