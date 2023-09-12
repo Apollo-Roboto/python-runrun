@@ -98,7 +98,7 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 			command_suggestions += self.get_sub_command_suggestions(exception)
 
 		# if there is no suggestion, nothing else to do
-		if len(argument_suggestions) == 0 and len(argument_suggestions) == 0:
+		if len(argument_suggestions) == 0 and len(command_suggestions) == 0:
 			return
 		
 		print('Do you mean:')

@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 import inspect
 import copy
 
-
 T = TypeVar('T')
 
 class Argument(Generic[T]):
@@ -52,12 +51,14 @@ class CommandDetails:
 		name: str,
 		display_name: str,
 		description: str,
-		aliases: list[str] = []
+		aliases: list[str] = [],
+		# examples: list[str] = [],
 	):
 		self.name = name
 		self.display_name = display_name
 		self.description = description
 		self.aliases = aliases
+		# self.examples = examples
 
 	def __eq__(self, other: object) -> bool:
 		if self.__class__ != other.__class__:
@@ -72,7 +73,6 @@ class CommandDetails:
 class Command:
 
 	command_details: CommandDetails = None
-	context: 'Context' = None
 
 	def __init__(self):
 		# instanciate all arguments at the instance level
@@ -80,6 +80,8 @@ class Command:
 
 			if type(value) is Argument:
 				setattr(self, key, copy.deepcopy(value))
+
+		self.context = Context()
 
 	def __eq__(self, other: object) -> bool:
 		if self.__class__ != other.__class__:

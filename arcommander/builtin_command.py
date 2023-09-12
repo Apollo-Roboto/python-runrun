@@ -78,6 +78,8 @@ class HelpCommand2(Command):
 			for cmd in sub_commands
 		]
 
+		data['usage'] = self.get_usage()
+
 		data['application'] = {
 			'name': 'IDK',
 			'version': 'IDK',
@@ -88,9 +90,50 @@ class HelpCommand2(Command):
 
 		print(json.dumps(data, indent='\t'))
 
+	def get_full_command_name(self, command: Command) -> str:
+		if command.context.parent_command == None:
+			return command.command_details.name
+
+		return self.get_full_command_name(command.context.parent_command) + " " + command.command_details.name
+
+	def get_usage(self) -> str:
+
+		# text = self.context.parent_command.command_details.name
+		text = self.get_full_command_name(self.context.parent_command)
+
+		# checking bigger than 1 to filter out the included help
+		if len(self.context.parent_command.get_sub_commands()) > 1:
+			text += ' [command]'
+
+		if len(self.context.parent_command.get_arguments()) > 0:
+			text += ' [arguments]'
+		
+		return text
+
+	def print_usage(self):
+		print(self.get_usage())
+	
+	def print_std(self):
+
+		# only print the banner on the root command
+		if self.context.parent_command == self.context.root_command:
+			self.print_banner(self.context.application.banner)
+
+		self.print_usage()
+
+		self.print_application(self.context.application)
+
+		for arg in self.context.parent_command.get_arguments():
+			self.print_argument(arg)
+
+		for cmd in self.context.parent_command.get_sub_commands():
+			self.print_command(cmd)
+
 	def run(self):
 		if self.format.value == HelpFormat.JSON:
 			self.print_json()
+		elif self.format.value == HelpFormat.STD:
+			self.print_std()
 		else:
 			raise NotImplementedError('That\'s not implemented yet, oops')
 
