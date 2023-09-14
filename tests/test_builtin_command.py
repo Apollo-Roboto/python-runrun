@@ -1,6 +1,6 @@
 import unittest
 
-from arcommander.builtin_command import HelpCommand2
+from arcommander.builtin_command import HelpCommand
 from arcommander.command_parser import CommandParser
 from arcommander.models import Command, CommandDetails, Argument, Context
 
@@ -9,7 +9,7 @@ class TestHelpCommand(unittest.TestCase):
 	def test_get_usage_nothing_pass(self):
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
@@ -18,7 +18,7 @@ class TestHelpCommand(unittest.TestCase):
 	def test_get_usage_one_arg_pass(self):
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		root = RootCommand()
 		root.context = Context(root_command=root)
@@ -30,7 +30,7 @@ class TestHelpCommand(unittest.TestCase):
 			command_details = CommandDetails(name='subcmd', display_name='Sub Command', description='A test command')
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = SubCommand()
 		root = RootCommand()
 		root.context = Context(root_command=root)
@@ -42,7 +42,7 @@ class TestHelpCommand(unittest.TestCase):
 			command_details = CommandDetails(name='subcmd', display_name='Sub Command', description='A test command')
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = SubCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		root = RootCommand()
@@ -53,10 +53,10 @@ class TestHelpCommand(unittest.TestCase):
 	def test_get_usage_sub_cmd_nothing_pass(self):
 		class SubCommand(Command):
 			command_details = CommandDetails(name='subcmd', display_name='Sub Command', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = SubCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		root = RootCommand()
@@ -68,11 +68,11 @@ class TestHelpCommand(unittest.TestCase):
 	def test_get_usage_sub_cmd_one_arg_pass(self):
 		class SubCommand(Command):
 			command_details = CommandDetails(name='subcmd', display_name='Sub Command', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = SubCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		root = RootCommand()
@@ -86,11 +86,11 @@ class TestHelpCommand(unittest.TestCase):
 			command_details = CommandDetails(name='t', display_name='T', description='A test command')
 		class SubCommand(Command):
 			command_details = CommandDetails(name='subcmd', display_name='Sub Command', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = TCommand()
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = SubCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		root = RootCommand()
@@ -104,12 +104,12 @@ class TestHelpCommand(unittest.TestCase):
 			command_details = CommandDetails(name='t', display_name='T', description='A test command')
 		class SubCommand(Command):
 			command_details = CommandDetails(name='subcmd', display_name='Sub Command', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 			cmd = TCommand()
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
-			help = HelpCommand2()
+			help = HelpCommand()
 			cmd = SubCommand()
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
 		root = RootCommand()

@@ -122,20 +122,6 @@ class Command:
 
 		return arguments
 
-	def get_full_command_display_name(self) -> str:
-		# TODO: this is only visual, should move to help
-		if self.context.parent_command == None:
-			return self.command_details.display_name
-
-		return self.context.parent_command.get_full_command_display_name() + " > " + self.command_details.display_name
-	
-	def get_full_command_name(self) -> str:
-		# TODO: this is only visual, should move to help
-		if self.context.parent_command == None:
-			return self.command_details.name
-
-		return self.context.parent_command.get_full_command_name() + " " + self.command_details.name
-
 class Context:
 	# application: Application
 	def __init__(self,
