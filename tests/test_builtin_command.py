@@ -5,7 +5,7 @@ from arcommander.command_parser import CommandParser
 from arcommander.models import Command, CommandDetails, Argument, Context
 
 class TestHelpCommand(unittest.TestCase):
-    
+
 	def test_get_usage_nothing_pass(self):
 		class RootCommand(Command):
 			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
@@ -117,3 +117,37 @@ class TestHelpCommand(unittest.TestCase):
 		root.cmd.context = Context(parent_command=root, root_command=root)
 		root.cmd.help.context = Context(parent_command=root.cmd, root_command=root)
 		self.assertEqual('root subcmd [command] [arguments]', root.cmd.help.get_usage())
+
+	def test_get_usage_one_positional_pass(self):
+		class RootCommand(Command):
+			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
+			help = HelpCommand()
+			arg = Argument[int](name='arg', display_name='Argument', position=0, description='A test argument')
+		root = RootCommand()
+		root.context = Context(root_command=root)
+		root.help.context = Context(parent_command=root,root_command=root)
+		self.assertEqual('root <arg> [arguments]', root.help.get_usage())
+
+	def test_get_usage_two_positional_pass(self):
+		class RootCommand(Command):
+			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
+			help = HelpCommand()
+			arg1 = Argument[int](name='arg1', display_name='Argument 1', position=0, description='A test argument')
+			arg2 = Argument[str](name='arg2', display_name='Argument 2', position=1, description='A test argument')
+		root = RootCommand()
+		root.context = Context(root_command=root)
+		root.help.context = Context(parent_command=root,root_command=root)
+		self.assertEqual('root <arg1> <arg2> [arguments]', root.help.get_usage())
+
+	def test_get_usage_one_positional_with_sub_cmd_pass(self):
+		class TCommand(Command):
+			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
+		class RootCommand(Command):
+			command_details = CommandDetails(name='root', display_name='Root', description='A test command')
+			help = HelpCommand()
+			arg = Argument[int](name='arg', display_name='Argument', position=0, description='A test argument')
+			cmd = TCommand()
+		root = RootCommand()
+		root.context = Context(root_command=root)
+		root.help.context = Context(parent_command=root,root_command=root)
+		self.assertEqual('root [command] <arg> [arguments]', root.help.get_usage())

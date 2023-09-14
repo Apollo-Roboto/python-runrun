@@ -98,7 +98,7 @@ class HelpCommand(Command):
 		return self.get_full_command_name(command.context.parent_command) + ' ' + command.command_details.name
 
 	def get_usage(self) -> str:
-		# TODO this should show the positional arguments
+		arguments = self.context.parent_command.get_arguments()
 
 		# text = self.context.parent_command.command_details.name
 		text = self.get_full_command_name(self.context.parent_command)
@@ -107,9 +107,13 @@ class HelpCommand(Command):
 		if len(self.context.parent_command.get_sub_commands()) > 1:
 			text += ' [command]'
 
-		if len(self.context.parent_command.get_arguments()) > 0:
+		# positionals arguments
+		for arg in filter(lambda arg: arg.position is not None, arguments):
+			text += f' <{arg.name}>'
+
+		if len(arguments) > 0:
 			text += ' [arguments]'
-		
+
 		return text
 
 	def print_usage(self):
