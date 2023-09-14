@@ -29,7 +29,15 @@ class HelpCommand(Command):
 		description='The output format of the command details',
 		short='f',
 		required=False,
-		value=HelpFormat.JSON
+		value=HelpFormat.STD,
+	)
+
+	filter = Argument[str](
+		name='filter',
+		display_name='Filter',
+		description='Filter the help results, this can help to find what you are looking for',
+		required=False,
+		value='',
 	)
 
 	def __init__(self, help_of_help=True):
@@ -45,8 +53,9 @@ class HelpCommand(Command):
 
 		parent_command = self.context.parent_command
 		root_command = self.context.root_command
-		arguments = parent_command.get_arguments()
-		sub_commands = parent_command.get_sub_commands()
+
+		arguments = self.get_parent_arguments()
+		sub_commands = self.get_parent_sub_commands()
 
 		data['command'] = {
 			'name': parent_command.command_details.name,
@@ -216,13 +225,25 @@ class HelpCommand(Command):
 		print()
 		print(f'{Back.WHITE}{Style.BRIGHT} {text.upper()} {Style.RESET_ALL}')
 
+	def get_parent_arguments(self) -> list[Argument]:
+		arguments = self.context.parent_command.get_arguments()
+		if self.filter.value == '':
+			return arguments
+		return list(filter(lambda arg: self.filter.value in arg.name, arguments))
+
+	def get_parent_sub_commands(self) -> list[Command]:
+		sub_commands = self.context.parent_command.get_sub_commands()
+		if self.filter.value == '':
+			return sub_commands
+		return list(filter(lambda cmd: self.filter.value in cmd.command_details.name, sub_commands))
+
 	def print_std(self):
 
 		self.print_header('Usage')
 		self.print_usage()
 
-		arguments = self.context.parent_command.get_arguments()
-		commands = self.context.parent_command.get_sub_commands()
+		arguments = self.get_parent_arguments()
+		commands = self.get_parent_sub_commands()
 
 		if len(arguments) > 0:
 			self.print_header('Arguments')
