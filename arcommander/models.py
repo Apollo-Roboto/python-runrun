@@ -36,7 +36,9 @@ class Argument(Generic[T]):
 	@property
 	def type(self) -> Type[T]:
 		if self._type == None:
+			# pylint: disable=E1101
 			self._type = typing.get_args(self.__orig_class__)[0]
+			# pylint: enable=E1101
 		return self._type
 
 	def __eq__(self, other: object) -> bool:

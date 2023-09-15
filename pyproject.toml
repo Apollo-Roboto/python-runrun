@@ -8,18 +8,20 @@ version = "0.0.1"
 authors = [
   { name="Apollo Roboto", email="apollo_roboto@outlook.com" },
 ]
-description  = ""
+description  = "A typed command line parser"
 readme = "README.md"
 license = "MIT"
 keywords = []
 dependencies = [
 	"colorama",
+	"Levenshtein"
 ]
 requires-python = ">=3.10"
 classifiers = [
 	"Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
 	"License :: OSI Approved :: MIT License",
 	"Operating System :: OS Independent",
 	"Environment :: Console",
