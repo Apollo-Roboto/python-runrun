@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 import inspect
 import copy
 
-
 T = TypeVar('T')
 
 class Argument(Generic[T]):
@@ -52,12 +51,14 @@ class CommandDetails:
 		name: str,
 		display_name: str,
 		description: str,
-		aliases: list[str] = []
+		aliases: list[str] = [],
+		# examples: list[str] = [],
 	):
 		self.name = name
 		self.display_name = display_name
 		self.description = description
 		self.aliases = aliases
+		# self.examples = examples
 
 	def __eq__(self, other: object) -> bool:
 		if self.__class__ != other.__class__:
@@ -72,7 +73,6 @@ class CommandDetails:
 class Command:
 
 	command_details: CommandDetails = None
-	context: 'Context' = None
 
 	def __init__(self):
 		# instanciate all arguments at the instance level
@@ -80,6 +80,8 @@ class Command:
 
 			if type(value) is Argument:
 				setattr(self, key, copy.deepcopy(value))
+
+		self.context = Context()
 
 	def __eq__(self, other: object) -> bool:
 		if self.__class__ != other.__class__:
@@ -119,20 +121,6 @@ class Command:
 				arguments.append(value)
 
 		return arguments
-
-	def get_full_command_display_name(self) -> str:
-		# TODO: this is only visual, should move to help
-		if self.context.parent_command == None:
-			return self.command_details.display_name
-
-		return self.context.parent_command.get_full_command_display_name() + " > " + self.command_details.display_name
-	
-	def get_full_command_name(self) -> str:
-		# TODO: this is only visual, should move to help
-		if self.context.parent_command == None:
-			return self.command_details.name
-
-		return self.context.parent_command.get_full_command_name() + " " + self.command_details.name
 
 class Context:
 	# application: Application

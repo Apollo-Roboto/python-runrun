@@ -5,24 +5,25 @@ import re
 import json
 import inspect
 from pathlib import Path
+import copy
 
 from arcommander.models import Command, Argument, Context
 from arcommander.exceptions import ParserException, ValidationException, UnknownArgumentException, MissingArgumentException, InvalidValueException
 
 class CommandParser:
-	def __init__(self, command: Command, parent_command: Command = None, context: Context = None) -> None:
+	def __init__(self, command: Command, parent_command: Command = None) -> None:
 		self.command = command
-		# self.command._parent_command = parent_command
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
 
 		# create context if not given
-		self.command.context = context
-		if self.command.context == None:
-			self.command.context = Context()
+		self.command.context = Context(
+			parent_command=parent_command,
+		)
 
-		# set the parent command
-		self.command.context.parent_command = parent_command
+		# pass down the original arguments
+		if parent_command is not None:
+			self.command.context.original_arguments = parent_command.context.original_arguments
 
 		# set the root command
 		if self.command.context.root_command == None:
@@ -65,7 +66,7 @@ class CommandParser:
 
 		# if it is a sub command, pass it down
 		if sub_command != None:
-			return CommandParser(sub_command, parent_command=self.command, context=self.command.context).parse(args[1:])
+			return CommandParser(sub_command, parent_command=self.command).parse(args[1:])
 
 		# set the scoped argumetns for this command
 		self.command.context.scoped_arguments = args
