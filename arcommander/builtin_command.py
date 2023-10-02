@@ -41,6 +41,13 @@ class HelpCommand(Command):
 		value='',
 	)
 
+	required_only = Argument[bool](
+		name='required-only',
+		display_name='Required Only',
+		description='Only show required arguments',
+		value=False,
+	)
+
 	def __init__(self, help_of_help=True):
 		super().__init__()
 		# help of help can create a recursive loop
@@ -157,9 +164,10 @@ class HelpCommand(Command):
 		columns = [
 			f'{argument.display_name}',
 			f'--{argument.name} {argument_type_text}\n{aliases_text}',
+			f'{"Required" if argument.required else ""}',
 			f'{argument.description}'
 		]
-		widths = [15, 30, 40] # TODO: this should be at the class level
+		widths = [16, 29, 12, 40] # TODO: this should be at the class level
 
 		text = self.columned_text(columns, widths)
 
@@ -168,7 +176,7 @@ class HelpCommand(Command):
 			return
 		
 		# the first line gets a slightly different style
-		print(f"  {Style.BRIGHT}{text[0][0]}{Style.RESET_ALL}  {text[0][1]} | {text[0][2]}")
+		print(f"  {Style.BRIGHT}{text[0][0]}{Style.RESET_ALL}  {text[0][1]} {text[0][2]} | {text[0][3]}")
 
 		for line in text[1:]:
 			print(f"  {Style.BRIGHT}{line[0]}  {Style.DIM}{line[1]}{Style.RESET_ALL}   {line[2]}")
@@ -182,7 +190,7 @@ class HelpCommand(Command):
 			f'{details.name}\n{aliases_text}',
 			f'{details.description}'
 		]
-		widths = [15, 30, 40] # TODO: this should be at the class level
+		widths = [16, 42, 40] # TODO: this should be at the class level
 
 		text = self.columned_text(columns, widths)
 
@@ -234,9 +242,17 @@ class HelpCommand(Command):
 
 	def get_parent_arguments(self) -> list[Argument]:
 		arguments = self.context.parent_command.get_arguments()
-		if self.filter.value == '':
-			return arguments
-		return list(filter(lambda arg: self.filter.value in arg.name, arguments))
+
+		# text based filter 
+		if self.filter.value != '':
+			filter_text = self.filter.value if self.filter.value is not None else ''
+			arguments = list(filter(lambda arg: filter_text in arg.name, arguments))
+		
+		# required filter
+		if self.required_only.value:
+			arguments = list(filter(lambda arg: arg.required, arguments))
+
+		return arguments
 
 	def get_parent_sub_commands(self) -> list[Command]:
 		sub_commands = self.context.parent_command.get_sub_commands()
