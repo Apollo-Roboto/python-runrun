@@ -6,6 +6,7 @@ import importlib.metadata
 from pathlib import Path
 import json
 import textwrap
+import sys
 
 from colorama import Fore, Style, Back
 
@@ -107,17 +108,23 @@ class HelpCommand(Command):
 		return self.get_full_command_name(command.context.parent_command) + ' ' + command.command_details.name
 
 	def get_usage(self) -> str:
-		arguments = self.context.parent_command.get_arguments()
+		parent_command = self.context.parent_command
+		if parent_command is None:
+			return ''
+		
+		arguments = parent_command.get_arguments()
 
-		# text = self.context.parent_command.command_details.name
-		text = self.get_full_command_name(self.context.parent_command)
+		text = self.get_full_command_name(parent_command)
 
 		# checking bigger than 1 to filter out the included help
-		if len(self.context.parent_command.get_sub_commands()) > 1:
+		if len(parent_command.get_sub_commands()) > 1:
 			text += ' [command]'
 
+		positional_arguments = filter(lambda arg: arg.position is not None, arguments)
+		positional_arguments = sorted(positional_arguments, key=lambda x: sys.maxsize if x.position is None else x.position)
+
 		# positionals arguments
-		for arg in filter(lambda arg: arg.position is not None, arguments):
+		for arg in positional_arguments:
 			text += f' <{arg.name}>'
 
 		if len(arguments) > 0:
@@ -256,6 +263,8 @@ class HelpCommand(Command):
 
 		for cmd in commands:
 			self.print_command(cmd)
+
+		print()
 
 	def run(self):
 		if self.format.value == HelpFormat.JSON:

@@ -1,4 +1,4 @@
-from typing import Union, Optional, Type
+from typing import Union, Optional, Type, Any
 import typing
 from enum import Enum
 import re
@@ -6,17 +6,17 @@ import json
 import inspect
 from pathlib import Path
 import copy
+import sys
 
 from arcommander.models import Command, Argument, Context
 from arcommander.exceptions import ParserException, ValidationException, UnknownArgumentException, MissingArgumentException, InvalidValueException
 
 class CommandParser:
-	def __init__(self, command: Command, parent_command: Command = None) -> None:
+	def __init__(self, command: Command, parent_command: Optional[Command] = None) -> None:
 		self.command = command
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
 
-		# create context if not given
 		self.command.context = Context(
 			parent_command=parent_command,
 		)
@@ -41,7 +41,7 @@ class CommandParser:
 		counter = 0
 
 		positional_arguments = filter(lambda x: x.position != None, self._arguments)
-		positional_arguments = sorted(positional_arguments, key=lambda x: x.position)
+		positional_arguments = sorted(positional_arguments, key=lambda x: sys.maxsize if x.position is None else x.position)
 
 		for arg in positional_arguments:
 			if arg.position == counter:
@@ -50,14 +50,17 @@ class CommandParser:
 				raise ValidationException('Positions must be incremental and unique, starting from 0')
 
 	def parse(self, args: Union[str, list[str]]) -> Command:
+		splitted_args: list[str] = []
 
-		# make sure it's a list
+		# make sure to use a list
 		if type(args) == str:
-			args = args.strip().split()
+			splitted_args = args.strip().split()
+		elif type(args) == list:
+			splitted_args = args
 
 		# if never set before, set the arguments
-		if self.command.context.original_arguments == None:
-			self.command.context.original_arguments = args
+		if self.command.context.original_arguments == []:
+			self.command.context.original_arguments = splitted_args
 
 		# check if first argument is a sub command
 		sub_command = None
@@ -69,7 +72,7 @@ class CommandParser:
 			return CommandParser(sub_command, parent_command=self.command).parse(args[1:])
 
 		# set the scoped argumetns for this command
-		self.command.context.scoped_arguments = args
+		self.command.context.scoped_arguments = splitted_args
 
 		# go through the arguments and find their values
 
@@ -179,15 +182,15 @@ class CommandParser:
 		# each values needs to be converted to 'center' -> str, '5' -> float, '7' -> float
 		#
 
-		args: list[object] = []
-		kwargs: dict[str, object] = {}
+		args: list[Any] = []
+		kwargs: dict[str, Any] = {}
 
 		# split at all comma unless escaped
 		args = re.split(r'(?<!\\),', string_value)
 
 		# replace escaped comma to comma
 		for i, arg in enumerate(args):
-			args[i] = arg.replace('\,', ',')
+			args[i] = arg.replace(r'\,', ',')
 
 		# find the keyword arguments
 		for arg in args[:]:
@@ -199,8 +202,8 @@ class CommandParser:
 			if len(key_value) > 1:
 
 				# replace escaped equals to equals
-				key_value[0] = key_value[0].replace('\=', '=')
-				key_value[1] = key_value[1].replace('\=', '=')
+				key_value[0] = key_value[0].replace(r'\=', '=')
+				key_value[1] = key_value[1].replace(r'\=', '=')
 
 				# keyword argument should not be in the args list
 				args.remove(arg)
@@ -261,7 +264,7 @@ class CommandParser:
 
 		for i, arg in enumerate(args):
 			# replace escaped comma to comma
-			arg = arg.replace('\,', ',')
+			arg = arg.replace(r'\,', ',')
 
 			args[i] = self.string_to_primitive_instance(arg, type)
 
@@ -291,21 +294,18 @@ class CommandParser:
 
 		for i, arg in enumerate(args):
 			# replace escaped comma to comma
-			arg = arg.replace('\,', ',')
+			arg = arg.replace(r'\,', ',')
 			
 			# split at equal unless escaped
 			key_value = re.split(r'(?<!\\)=', arg, maxsplit=1)
 
-			# if it did split, it's a keyword argument
-			if len(key_value) > 1:
+			# if it did not split, it's not valid
+			if len(key_value) <= 1:
+				raise ValueError('not a valid key=value pair')
 
-				# replace escaped equals to equals
-				key = key_value[0].replace('\=', '=')
-				value = key_value[1].replace('\=', '=')
-			
-			# otherwise it's not valid
-			else:
-				pass
+			# replace escaped equals to equals
+			key = key_value[0].replace(r'\=', '=')
+			value = key_value[1].replace(r'\=', '=')
 			
 			key_value[0] = self.string_to_primitive_instance(key, key_type)
 			if key_value[0] == None:
@@ -375,6 +375,8 @@ class CommandParser:
 		arg = arg.lower()
 
 		for sub_command in self._sub_commands:
+			if sub_command.command_details is None:
+				continue
 			name = sub_command.command_details.name.lower()
 			if name == arg:
 				return sub_command

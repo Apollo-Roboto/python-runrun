@@ -683,6 +683,14 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_dict_arg_missing_equal_fail(self):
+		class RootCommand(Command):
+			command_details = BLANK_DETAILS
+			things = Argument[dict[str,str]](name='things', display_name='Things', description='', required=False, value={})
+		
+		with self.assertRaises(InvalidValueException):
+			CommandParser(RootCommand()).parse(['--things', 'name,last_name=Forfafui'])
+
 	# endregion
 
 	# region validate_command method

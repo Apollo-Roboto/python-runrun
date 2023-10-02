@@ -31,18 +31,18 @@ class Argument(Generic[T]):
 
 		# self.str_to_type = str_to_type
 
-		self._type: Type[T] = None
+		self._type: Optional[Type[T]] = None
 
 	@property
 	def type(self) -> Type[T]:
 		if self._type == None:
 			# pylint: disable=E1101
-			self._type = typing.get_args(self.__orig_class__)[0]
+			self._type = typing.get_args(self.__orig_class__)[0] # type: ignore
 			# pylint: enable=E1101
-		return self._type
+		return self._type # type: ignore
 
 	def __eq__(self, other: object) -> bool:
-		if self.__class__ != other.__class__:
+		if not isinstance(other, self.__class__):
 			return False
 
 		return self.value == other.value
@@ -63,7 +63,7 @@ class CommandDetails:
 		# self.examples = examples
 
 	def __eq__(self, other: object) -> bool:
-		if self.__class__ != other.__class__:
+		if not isinstance(other, self.__class__):
 			return False
 		return (
 			self.name == other.name and
@@ -74,7 +74,7 @@ class CommandDetails:
 
 class Command:
 
-	command_details: CommandDetails = None
+	command_details: Optional[CommandDetails] = None
 
 	def __init__(self):
 		# instanciate all arguments at the instance level
@@ -86,9 +86,8 @@ class Command:
 		self.context = Context()
 
 	def __eq__(self, other: object) -> bool:
-		if self.__class__ != other.__class__:
+		if not isinstance(other, self.__class__):
 			return False
-		
 		if self.command_details != other.command_details:
 			return False
 		
@@ -127,9 +126,9 @@ class Command:
 class Context:
 	# application: Application
 	def __init__(self,
-		root_command: Command = None,
-		original_arguments: list[str] = None,
-		scoped_arguments: list[str] = None,
+		root_command: Optional[Command] = None,
+		original_arguments: list[str] = [],
+		scoped_arguments: list[str] = [],
 		parent_command: Optional[Command] = None,
 	) -> None:
 		self.root_command = root_command
@@ -138,7 +137,7 @@ class Context:
 		self.parent_command = parent_command
 
 	def __eq__(self, other):
-		if self.__class__ != other.__class__:
+		if not isinstance(other, self.__class__):
 			return False
 		return (
 			self.root_command == other.root_command and
@@ -146,4 +145,3 @@ class Context:
 			self.scoped_arguments == other.scoped_arguments and
 			self.parent_command == other.parent_command
 		)
-

@@ -109,15 +109,18 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 			# exception.command.help.print_argument(arg)
 		
 		for cmd in command_suggestions:
-			print(f'  {cmd.command_details.display_name} ({cmd.command_details.name})')
+			if cmd.command_details is None:
+				print(f'  None (None)')
+			else:
+				print(f'  {cmd.command_details.display_name} ({cmd.command_details.name})')
 			# exception.command.help.print_command(arg)
 
 	def get_argument_suggestions(self, exception: UnknownArgumentException) -> list[Argument]:
 		suggestions = []
 
 		for arg in exception.command.get_arguments():
-			distance = Levenshtein.distance(exception.unknown_argument.removeprefix('--').lower(), arg.name.lower(), score_cutoff=1)
-			if distance == 1:
+			distance = Levenshtein.distance(exception.unknown_argument.removeprefix('--').lower(), arg.name.lower(), score_cutoff=2)
+			if distance <= 2:
 				suggestions.append(arg)
 
 		return suggestions
@@ -126,8 +129,11 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 		suggestions = []
 
 		for sub_command in exception.command.get_sub_commands():
-			distance = Levenshtein.distance(exception.unknown_argument.lower(), sub_command.command_details.name.lower(), score_cutoff=1)
-			if distance == 1:
+			if sub_command.command_details is None:
+				continue
+
+			distance = Levenshtein.distance(exception.unknown_argument.lower(), sub_command.command_details.name.lower(), score_cutoff=2)
+			if distance <= 2:
 				suggestions.append(sub_command)
 
 		return suggestions
