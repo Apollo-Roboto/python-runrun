@@ -111,3 +111,10 @@ class TestContext(unittest.TestCase):
 		)
 
 		self.assertNotEqual(context1, context2)
+
+class TestArgument(unittest.TestCase):
+
+	def test_str_pass(self):
+		year_arg = Argument[int](name='year', display_name='Year', description='test')
+		year_arg.value = 1234
+		self.assertEqual(f'{year_arg}', '1234')

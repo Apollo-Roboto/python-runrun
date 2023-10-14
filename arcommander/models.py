@@ -47,6 +47,9 @@ class Argument(Generic[T]):
 
 		return self.value == other.value
 
+	def __str__(self):
+		return str(self.value)
+
 class CommandDetails:
 
 	def __init__(self, *,
