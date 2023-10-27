@@ -167,7 +167,7 @@ class HelpCommand(Command):
 			f'{"Required" if argument.required else ""}',
 			f'{argument.description}'
 		]
-		widths = [16, 29, 12, 40] # TODO: this should be at the class level
+		widths = [16, 29, 12, 60] # TODO: this should be at the class level
 
 		text = self.columned_text(columns, widths)
 
@@ -190,7 +190,7 @@ class HelpCommand(Command):
 			f'{details.name}\n{aliases_text}',
 			f'{details.description}'
 		]
-		widths = [16, 42, 40] # TODO: this should be at the class level
+		widths = [16, 42, 60] # TODO: this should be at the class level
 
 		text = self.columned_text(columns, widths)
 
@@ -240,7 +240,22 @@ class HelpCommand(Command):
 		print()
 		print(f'{Back.WHITE}{Style.BRIGHT} {text.upper()} {Style.RESET_ALL}')
 
+	def print_parent_description(self):
+		if self.context.parent_command is None:
+			return
+
+		details = self.context.parent_command.command_details
+
+		if details is None:
+			return
+		
+		print()
+		print(f'  {details.description}')
+
 	def get_parent_arguments(self) -> list[Argument]:
+		if self.context.parent_command is None:
+			return []
+
 		arguments = self.context.parent_command.get_arguments()
 
 		# text based filter 
@@ -255,12 +270,20 @@ class HelpCommand(Command):
 		return arguments
 
 	def get_parent_sub_commands(self) -> list[Command]:
+		if self.context.parent_command is None:
+			return []
+
 		sub_commands = self.context.parent_command.get_sub_commands()
-		if self.filter.value == '':
-			return sub_commands
-		return list(filter(lambda cmd: self.filter.value in cmd.command_details.name, sub_commands))
+
+		if self.filter.value != '':
+			filter_text = self.filter.value if self.filter.value is not None else ''
+			sub_commands = list(filter(lambda cmd: filter_text in cmd.command_details.name, sub_commands))
+
+		return sub_commands
 
 	def print_std(self):
+
+		self.print_parent_description()
 
 		self.print_header('Usage')
 		self.print_usage()
