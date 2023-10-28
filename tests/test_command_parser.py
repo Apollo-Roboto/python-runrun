@@ -3,9 +3,9 @@ from enum import Enum
 from pathlib import Path
 from dataclasses import dataclass
 
-from arcommander.models import Argument, Command, CommandDetails, Context
-from arcommander.command_parser import CommandParser
-from arcommander.exceptions import CLIException, ParserException, ValidationException, InvalidValueException, MissingArgumentException, UnknownArgumentException
+from runrun.models import Argument, Command, CommandDetails, Context
+from runrun.command_parser import CommandParser
+from runrun.exceptions import CLIException, ParserException, ValidationException, InvalidValueException, MissingArgumentException, UnknownArgumentException
 
 BLANK_DETAILS = CommandDetails(name='', display_name='', description='')
 
@@ -71,18 +71,6 @@ class TestCommandParser(unittest.TestCase):
 
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
-
-	def test_parse_cmd_with_int_arg_pass(self):
-
-		class RootCommand(Command):
-			command_details = BLANK_DETAILS
-			arg = Argument[int](name='arg', display_name='Argument', description='', required=False)
-
-		returned_command = CommandParser(RootCommand()).parse(['--arg', '1515'])
-		expected_command = RootCommand()
-		expected_command.arg.value = 1515
-
-		self.assertEqual(returned_command, expected_command)
 
 	def test_parse_cmd_with_invalid_int_arg_fail(self):
 

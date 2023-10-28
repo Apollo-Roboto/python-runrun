@@ -1,8 +1,8 @@
 import unittest
 
-from arcommander.builtin_command import HelpCommand
-from arcommander.command_parser import CommandParser
-from arcommander.models import Command, CommandDetails, Argument, Context
+from runrun.builtin_command import HelpCommand
+from runrun.command_parser import CommandParser
+from runrun.models import Command, CommandDetails, Argument, Context
 
 class TestHelpCommand(unittest.TestCase):
 

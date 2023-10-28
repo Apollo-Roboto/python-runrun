@@ -30,7 +30,7 @@ jobs:
         run: python -m pip install -r ./requirements.txt
 
       - name: Validate Code
-        run: python -m pylint -E ./arcommander/
+        run: python -m pylint -E ./runrun/
 
       - name: Tests
         run: python -m unittest discover -v -s ./tests -p test_*.py

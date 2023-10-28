@@ -10,7 +10,7 @@ import sys
 
 from colorama import Fore, Style, Back
 
-from arcommander.models import Command, CommandDetails, Argument
+from runrun.models import Command, CommandDetails, Argument
 
 class HelpFormat(Enum):
 	STD = 0

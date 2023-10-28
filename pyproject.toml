@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "arcommander"
+name = "runrun"
 version = "0.0.1"
 authors = [
   { name="Apollo Roboto", email="apollo_roboto@outlook.com" },
@@ -35,4 +35,4 @@ classifiers = [
 ]
 
 [project.urls]
-"Source" = "https://github.com/Apollo-Roboto/python-arcommander"
+"Source" = "https://github.com/Apollo-Roboto/python-runrun"

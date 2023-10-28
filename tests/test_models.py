@@ -1,6 +1,6 @@
 import unittest
 
-from arcommander.models import Argument, Command, CommandDetails, Context
+from runrun.models import Argument, Command, CommandDetails, Context
 
 class TestCommand(unittest.TestCase):
 

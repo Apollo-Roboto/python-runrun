@@ -3,7 +3,7 @@ from enum import Enum
 import Levenshtein
 from colorama import Fore, Style
 
-from arcommander.models import Command, Argument
+from runrun.models import Command, Argument
 
 class CLIException(Exception): pass
 
@@ -56,6 +56,9 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 
 	def print_invalid_value_exception(self, exception: InvalidValueException):
 
+		# TODO: print usage
+		# exception.command.help.print_usage()
+
 		print(f'{Fore.RED}Invalid value given for argument {exception.argument.display_name}{Style.RESET_ALL}')
 
 		# TODO: the format here should be the same as the help format
@@ -76,6 +79,9 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 
 	def print_missing_argument_exception(self, exception: MissingArgumentException):
 
+		# TODO: print usage
+		# exception.command.help.print_usage()
+
 		if len(exception.missing_arguments) == 1:
 			print(f'{Fore.RED}Missing one required argument{Style.RESET_ALL}')
 		else:
@@ -87,6 +93,10 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 			# exception.command.help.print_argument(arg)
 
 	def print_unknown_argument_exception(self, exception: UnknownArgumentException):
+
+		# TODO: print usage
+		# exception.command.help.print_usage()
+
 		argument_suggestions: list[Argument] = []
 		command_suggestions: list[Command] = []
 

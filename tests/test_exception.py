@@ -1,8 +1,8 @@
 import unittest
 
-from arcommander.models import Command, Argument, CommandDetails
-from arcommander.exceptions import UnknownArgumentException
-from arcommander.exceptions import DefaultExceptionHandler
+from runrun.models import Command, Argument, CommandDetails
+from runrun.exceptions import UnknownArgumentException
+from runrun.exceptions import DefaultExceptionHandler
 
 class TestDefaultExceptionHandler(unittest.TestCase):
 

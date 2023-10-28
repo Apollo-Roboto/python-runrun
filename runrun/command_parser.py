@@ -8,8 +8,8 @@ from pathlib import Path
 import copy
 import sys
 
-from arcommander.models import Command, Argument, Context
-from arcommander.exceptions import ParserException, ValidationException, UnknownArgumentException, MissingArgumentException, InvalidValueException
+from runrun.models import Command, Argument, Context
+from runrun.exceptions import ParserException, ValidationException, UnknownArgumentException, MissingArgumentException, InvalidValueException
 
 class CommandParser:
 	def __init__(self, command: Command, parent_command: Optional[Command] = None) -> None:
