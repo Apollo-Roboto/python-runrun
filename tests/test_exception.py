@@ -1,6 +1,6 @@
 import unittest
 
-from runrun.models import Command, Argument, CommandDetails
+from runrun.models import Command, Argument
 from runrun.exceptions import UnknownArgumentException
 from runrun.exceptions import DefaultExceptionHandler
 
@@ -14,7 +14,8 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 		arg5 = Argument[int](name='chrono', display_name='Chrono', description='A test argument')
 
 		class TCommand(Command):
-			command_details = CommandDetails(name='test', display_name='Test', description='Test.')
+			def __init__(self):
+				super().__init__(name='test', display_name='Test', description='Test.')
 			_arg1 = arg1
 			_arg2 = arg2
 			_arg3 = arg3
@@ -43,7 +44,8 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 		arg4 = Argument[str](name='argument4', display_name='Argument 4', description='A test argument')
 
 		class TCommand(Command):
-			command_details = CommandDetails(name='test', display_name='Test', description='Test.')
+			def __init__(self):
+				super().__init__(name='test', display_name='Test', description='Test.')
 			_arg1 = arg1
 			_arg2 = arg2
 			_arg3 = arg3
@@ -61,23 +63,29 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 
 	def test_get_sub_command_suggestions_pass(self):
 		class SubCommand1(Command):
-			command_details = CommandDetails(name='cmd1', display_name='Sub Command 1', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd1')
 		cmd1 = SubCommand1()
 		class SubCommand2(Command):
-			command_details = CommandDetails(name='cmd2', display_name='Sub Command 2', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd2')
 		cmd2 = SubCommand2()
 		class SubCommand3(Command):
-			command_details = CommandDetails(name='cmd3', display_name='Sub Command 3', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd3')
 		cmd3 = SubCommand3()
 		class SubCommand4(Command):
-			command_details = CommandDetails(name='cmd4', display_name='Sub Command 4', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd4')
 		cmd4 = SubCommand4()
 		class ChronoCommand(Command):
-			command_details = CommandDetails(name='chrono', display_name='Chrono', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='chrono')
 		chronocmd = ChronoCommand()
 
 		class TCommand(Command):
-			command_details = CommandDetails(name='test', display_name='Test', description='Test.')
+			def __init__(self):
+				super().__init__(name='test', display_name='Test', description='Test.')
 			_cmd1 = cmd1
 			_cmd2 = cmd2
 			_cmd3 = cmd3
@@ -105,20 +113,25 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 
 	def test_get_sub_command_suggestions_no_match_pass(self):
 		class SubCommand1(Command):
-			command_details = CommandDetails(name='cmd1', display_name='Sub Command 1', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd1')
 		cmd1 = SubCommand1()
 		class SubCommand2(Command):
-			command_details = CommandDetails(name='cmd2', display_name='Sub Command 2', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd2')
 		cmd2 = SubCommand2()
 		class SubCommand3(Command):
-			command_details = CommandDetails(name='cmd3', display_name='Sub Command 3', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd3')
 		cmd3 = SubCommand3()
 		class SubCommand4(Command):
-			command_details = CommandDetails(name='cmd4', display_name='Sub Command 4', description='A test sub command')
+			def __init__(self):
+				super().__init__(name='cmd4')
 		cmd4 = SubCommand4()
 
 		class TCommand(Command):
-			command_details = CommandDetails(name='test', display_name='Test', description='Test.')
+			def __init__(self):
+				super().__init__(name='test')
 			_cmd1 = cmd1
 			_cmd2 = cmd2
 			_cmd3 = cmd3

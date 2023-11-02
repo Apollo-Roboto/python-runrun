@@ -1,18 +1,18 @@
 import unittest
 
-from runrun.models import Argument, Command, CommandDetails, Context
+from runrun.models import Argument, Command, Context
 
 class TestCommand(unittest.TestCase):
 
 	def test_equal_simple_pass(self):
 		class TCommand(Command):
-			command_details = CommandDetails(name='a', display_name='A', description='A test command')
+			def __init__(self): super().__init__(name='a', display_name='A', description='A test command')
 
 		self.assertEqual(TCommand(), TCommand())
 
 	def test_equal_with_same_arg_pass(self):
 		class TCommand(Command):
-			command_details = CommandDetails(name='a', display_name='A', description='A test command')
+			def __init__(self): super().__init__(name='a', display_name='A', description='A test command')
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument', required=True)
 		
 		a = TCommand()
@@ -24,7 +24,7 @@ class TestCommand(unittest.TestCase):
 
 	def test_equal_with_diff_arg_pass(self):
 		class TCommand(Command):
-			command_details = CommandDetails(name='a',display_name='A',description='A test command',)
+			def __init__(self): super().__init__(name='a')
 			arg = Argument[str](name='arg', display_name='Argument', description='A test argument', required=True)
 		
 		a = TCommand()
@@ -36,7 +36,7 @@ class TestCommand(unittest.TestCase):
 
 	def test_get_arguments_pass(self):
 		class TCommand(Command):
-			command_details = CommandDetails(name='a',display_name='A',description='A test command')
+			def __init__(self): super().__init__(name='a')
 			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='A test argument', required=True)
 			arg2 = Argument[int](name='arg2', display_name='Argument 2', description='A test argument', required=False, value=5)
 			arg3 = Argument[float]( name='arg3',display_name='Argument 3',description='A test argument',required=True)
@@ -52,13 +52,13 @@ class TestCommand(unittest.TestCase):
 
 	def test_get_sub_commands_pass(self):
 		class Sub_command_1(Command):
-			command_details = CommandDetails(name='a',display_name='A',description='A test command')
+			def __init__(self): super().__init__(name='a')
 		class Sub_command_2(Command):
-			command_details = CommandDetails(name='b',display_name='B',description='B test command')
+			def __init__(self): super().__init__(name='b')
 		class Sub_command_3(Command):
-			command_details = CommandDetails(name='c',display_name='C',description='C test command')
+			def __init__(self): super().__init__(name='c')
 		class TCommand(Command):
-			command_details = CommandDetails(name='test',display_name='Test',description='The test command')
+			def __init__(self): super().__init__(name='test')
 			cmd1 = Sub_command_1()
 			cmd2 = Sub_command_2()
 			cmd3 = Sub_command_3()
@@ -76,7 +76,7 @@ class TestContext(unittest.TestCase):
 	
 	def test_equal_pass(self):
 		class TCommand(Command):
-			command_details = CommandDetails(name='t',display_name='T',description='A test command')
+			def __init__(self): super().__init__(name='t')
 
 		context1 = Context(
 			original_arguments=['add', '1', '2'],
@@ -94,7 +94,7 @@ class TestContext(unittest.TestCase):
 
 	def test_unequal_pass(self):
 		class TCommand(Command):
-			command_details = CommandDetails(name='t',display_name='T',description='A test command')
+			def __init__(self): super().__init__(name='t')
 
 		context1 = Context(
 			original_arguments=['add', '1', '2'],

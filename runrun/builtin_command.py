@@ -10,19 +10,13 @@ import sys
 
 from colorama import Fore, Style, Back
 
-from runrun.models import Command, CommandDetails, Argument
+from runrun.models import Command, Argument
 
 class HelpFormat(Enum):
 	STD = 0
 	JSON = 1
 
 class HelpCommand(Command):
-
-	command_details = CommandDetails(
-		name='help',
-		display_name='Help',
-		description='Show help about this command',
-	)
 
 	format = Argument[HelpFormat](
 		name='format',
@@ -49,7 +43,12 @@ class HelpCommand(Command):
 	)
 
 	def __init__(self, help_of_help=True):
-		super().__init__()
+		super().__init__(
+			name='help',
+			display_name='Help',
+			description='Show help about this command',
+		)
+
 		# help of help can create a recursive loop
 		if help_of_help:
 			self.help = HelpCommand(help_of_help=False)
@@ -64,13 +63,13 @@ class HelpCommand(Command):
 
 		arguments = self.get_parent_arguments()
 		sub_commands = self.get_parent_sub_commands()
-
+		
 		data['command'] = {
-			'name': parent_command.command_details.name,
-			'display_name': parent_command.command_details.display_name,
-			'description': parent_command.command_details.description,
-			'aliases': parent_command.command_details.aliases,
-		}
+			'name': parent_command.command_name,
+			'display_name': parent_command.command_display_name,
+			'description': parent_command.command_description,
+			'aliases': parent_command.command_aliases,
+		} if parent_command else None
 
 		data['arguments'] = [
 			{
@@ -88,10 +87,10 @@ class HelpCommand(Command):
 
 		data['sub_commands'] = [
 			{
-				'name': cmd.command_details.name,
-				'display_name': cmd.command_details.display_name,
-				'description': cmd.command_details.description,
-				'aliases': cmd.command_details.aliases,
+				'name': cmd.command_name,
+				'display_name': cmd.command_display_name,
+				'description': cmd.command_description,
+				'aliases': cmd.command_aliases,
 			}
 			for cmd in sub_commands
 		]
@@ -110,9 +109,9 @@ class HelpCommand(Command):
 
 	def get_full_command_name(self, command: Command) -> str:
 		if command.context.parent_command == None:
-			return command.command_details.name
+			return command.command_name
 
-		return self.get_full_command_name(command.context.parent_command) + ' ' + command.command_details.name
+		return self.get_full_command_name(command.context.parent_command) + ' ' + command.command_name
 
 	def get_usage(self) -> str:
 		parent_command = self.context.parent_command
@@ -182,13 +181,12 @@ class HelpCommand(Command):
 			print(f"  {Style.BRIGHT}{line[0]}  {Style.DIM}{line[1]}{Style.RESET_ALL}   {line[2]}")
 
 	def print_command(self, cmd: Command):
-		details = cmd.command_details
-		aliases_text = ', '.join(details.aliases)
+		aliases_text = ', '.join(cmd.command_aliases)
 		
 		columns = [
-			f'{details.display_name}',
-			f'{details.name}\n{aliases_text}',
-			f'{details.description}'
+			f'{cmd.command_display_name}',
+			f'{cmd.command_name}\n{aliases_text}',
+			f'{cmd.command_description}'
 		]
 		widths = [16, 42, 60] # TODO: this should be at the class level
 
@@ -241,16 +239,13 @@ class HelpCommand(Command):
 		print(f'{Back.WHITE}{Style.BRIGHT} {text.upper()} {Style.RESET_ALL}')
 
 	def print_parent_description(self):
-		if self.context.parent_command is None:
+		parent_command = self.context.parent_command
+
+		if parent_command is None:
 			return
 
-		details = self.context.parent_command.command_details
-
-		if details is None:
-			return
-		
 		print()
-		print(f'  {details.description}')
+		print(f'  {parent_command.command_description}')
 
 	def get_parent_arguments(self) -> list[Argument]:
 		if self.context.parent_command is None:
@@ -277,7 +272,7 @@ class HelpCommand(Command):
 
 		if self.filter.value != '':
 			filter_text = self.filter.value if self.filter.value is not None else ''
-			sub_commands = list(filter(lambda cmd: filter_text in cmd.command_details.name, sub_commands))
+			sub_commands = list(filter(lambda cmd: filter_text in cmd.command_name, sub_commands))
 
 		return sub_commands
 
@@ -329,12 +324,24 @@ class HelpCommand(Command):
 
 class InfoCommand(Command):
 
-	command_details = CommandDetails(
-		name='info',
-		display_name='Information',
-		description='Application information',
-	)
+	def __init__(self):
+		super().__init__(
+			name='info',
+			display_name='Information',
+			description='Application information'
+		)
 
 	def run(self):
 		print('IDK')
 
+class VersionCommand(Command):
+
+	def __init__(self):
+		super().__init__(
+			name='version',
+			display_name='Print the version',
+			description='Application version',
+		)
+
+	def run(self):
+		print('IDK')

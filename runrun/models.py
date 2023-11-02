@@ -50,36 +50,26 @@ class Argument(Generic[T]):
 	def __str__(self):
 		return str(self.value)
 
-class CommandDetails:
-
-	def __init__(self, *,
-		name: str,
-		display_name: str,
-		description: str,
-		aliases: list[str] = [],
-		# examples: list[str] = [],
-	):
-		self.name = name
-		self.display_name = display_name
-		self.description = description
-		self.aliases = aliases
-		# self.examples = examples
-
-	def __eq__(self, other: object) -> bool:
-		if not isinstance(other, self.__class__):
-			return False
-		return (
-			self.name == other.name and
-			self.display_name == other.display_name and
-			self.description == other.description and
-			self.aliases == other.aliases
-		)
-
 class Command:
 
-	command_details: Optional[CommandDetails] = None
+	# command_details: Optional[CommandDetails] = None
 
-	def __init__(self):
+	def __init__(self,
+		name: str,
+		display_name: str | None = None,
+		description: str = '',
+		aliases: list[str] = []
+	):
+		
+		# diplay name defaults to name
+		if not display_name:
+			display_name = name
+
+		self.command_name = name
+		self.command_display_name = display_name
+		self.command_description = description
+		self.command_aliases = aliases
+
 		# instanciate all arguments at the instance level
 		for key, value in inspect.getmembers(self):
 
@@ -91,15 +81,20 @@ class Command:
 	def __eq__(self, other: object) -> bool:
 		if not isinstance(other, self.__class__):
 			return False
-		if self.command_details != other.command_details:
+		if (
+			self.command_name != other.command_name or
+			self.command_display_name != other.command_display_name or
+			self.command_description != other.command_description or
+			self.command_aliases != other.command_aliases
+		):
 			return False
 		
 		return self.get_arguments() == other.get_arguments()
 
 	def __repr__(self) -> str:
 		arguments = ','.join([ f'{a.name}:{a.value}' for a in self.get_arguments()])
-		sub_commands = ','.join([ f'{a.command_details.name}' for a in self.get_sub_commands()])
-		return f'{self.__class__.__name__}(name={self.command_details.name}, args={arguments}, sub_cmd={sub_commands})'
+		sub_commands = ','.join([ f'{a.command_name}' for a in self.get_sub_commands()])
+		return f'{self.__class__.__name__}(name={self.command_name}, args={arguments}, sub_cmd={sub_commands})'
 
 	def run(self):
 		help = getattr(self, 'help')

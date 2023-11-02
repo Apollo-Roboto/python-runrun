@@ -3,18 +3,17 @@ from enum import Enum
 from pathlib import Path
 from dataclasses import dataclass
 
-from runrun.models import Argument, Command, CommandDetails, Context
+from runrun.models import Argument, Command, Context
 from runrun.command_parser import CommandParser
 from runrun.exceptions import CLIException, ParserException, ValidationException, InvalidValueException, MissingArgumentException, UnknownArgumentException
-
-BLANK_DETAILS = CommandDetails(name='', display_name='', description='')
 
 class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_two_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](name='arg2', display_name='Argument 2', description='', required=False)
 
@@ -30,7 +29,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_int_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[int](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '1515'])
@@ -42,7 +42,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_bool_true_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'true'])
@@ -54,7 +55,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_bool_false_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'false'])
@@ -66,7 +68,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_invalid_bool_arg_fail(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
 		with self.assertRaises(InvalidValueException):
@@ -75,7 +78,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_invalid_int_arg_fail(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[int](name='arg', display_name='Argument', description='', required=False)
 
 		with self.assertRaises(InvalidValueException):
@@ -84,7 +88,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_float_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[float](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '1515.5'])
@@ -96,7 +101,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_invalid_float_arg_fail(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[float](name='arg', display_name='Argument', description='', required=False)
 
 		with self.assertRaises(InvalidValueException):
@@ -109,7 +115,8 @@ class TestCommandParser(unittest.TestCase):
 			C = 3
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[TestEnum](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'B'])
@@ -125,7 +132,8 @@ class TestCommandParser(unittest.TestCase):
 			C = 3
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[TestEnum](name='arg', display_name='Argument', description='', required=False)
 
 		with self.assertRaises(InvalidValueException):
@@ -138,7 +146,8 @@ class TestCommandParser(unittest.TestCase):
 			C = 3
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[TestEnum](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'b'])
@@ -150,7 +159,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_bool_arg_no_value_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg'])
@@ -162,7 +172,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_bool_arg_different_values_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[bool](name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[bool](name='arg2', display_name='Argument 2', description='', required=False)
 			arg3 = Argument[bool](name='arg3', display_name='Argument 3', description='', required=False)
@@ -178,7 +189,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_bool_arg_special_value_true_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
 		for true_value in ['true', 'yes', 'yup', '👍', ':)', '😊', '1', 'positive', 'OK']:
@@ -192,7 +204,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_bool_arg_special_value_false_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](name='arg', display_name='Argument', description='', required=False)
 
 		for false_value in ['false', 'no', 'nah', '👎', ':(', '☹', '0', 'negative']:
@@ -206,7 +219,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_path_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Path](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '/bin/sh'])
@@ -225,7 +239,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.x == other.x and self.y == other.y
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Coordinates](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'x=5,y=7'])
@@ -245,7 +260,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.name == other.name and self.x == other.x and self.y and other.y
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Label](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'center,x=5,y=7'])
@@ -263,7 +279,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.name == other.name
 		
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Robot](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'butter'])
@@ -281,7 +298,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.count == other.count
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Counter](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '5555'])
@@ -300,7 +318,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.a == other.a and self.b == other.b
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[TwoPath](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', './a/,./b/'])
@@ -320,7 +339,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.text
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Book](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'text=\=\=\=\='])
@@ -340,7 +360,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.name
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Robot](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'name=Zurbafo\, Destroyer of zoop'])
@@ -360,7 +381,8 @@ class TestCommandParser(unittest.TestCase):
 				return self.name
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[Robot](name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', ''])
@@ -371,7 +393,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_str_positional_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[str](position=0, name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['The color is yellow'])
@@ -382,7 +405,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_bool_positional_true_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['true'])
@@ -393,7 +417,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_bool_positional_false_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['False'])
@@ -404,7 +429,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_list_of_str_positional_false_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[list[str]](position=0, name='arg', display_name='Argument', description='', required=False)
 
 		returned_command = CommandParser(RootCommand()).parse(['one,two,three'])
@@ -415,7 +441,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_bool_positional_missing_fail(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[bool](position=0, name='arg', display_name='Argument', description='', required=True)
 
 		with self.assertRaises(MissingArgumentException):
@@ -423,7 +450,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_str_positional_missing_fail(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[str](position=0, name='arg', display_name='Argument', description='', required=True)
 
 		with self.assertRaises(MissingArgumentException):
@@ -431,7 +459,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_str_positional_and_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](name='arg2', display_name='Argument 2', description='', required=False)
 
@@ -444,7 +473,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_multiple_int_positional_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[int](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[int](position=1, name='arg2', display_name='Argument 2', description='', required=False)
 			arg3 = Argument[int](position=2, name='arg3', display_name='Argument 3', description='', required=False)
@@ -461,7 +491,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_multiple_int_positional_and_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
 			arg3 = Argument[str](name='arg3', display_name='Argument 3', description='', required=False)
@@ -478,7 +509,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_misplaced_positional_and_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
 			arg3 = Argument[str](name='arg3', display_name='Argument 3', description='', required=False)
@@ -496,7 +528,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_required_arg_pass(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'a test value'])
@@ -508,7 +541,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_missing_required_arg_fail(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
 	
 		with self.assertRaises(MissingArgumentException):
@@ -517,7 +551,8 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_cmd_with_unknown_arg_fail(self):
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg = Argument[str](name='arg', display_name='Argument', description='', required=True)
 	
 		with self.assertRaises(UnknownArgumentException):
@@ -526,10 +561,12 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_subcmd_no_arg_pass(self):
 
 		class TestCommand(Command):
-			command_details = CommandDetails(name='test', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test')
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			test = TestCommand()
 
 		returned_command = CommandParser(RootCommand()).parse(['test'])
@@ -540,22 +577,27 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_nested_subcmd_no_arg_pass(self):
 
 		class Test4Command(Command):
-			command_details = CommandDetails(name='test4', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test4')
 
 		class Test3Command(Command):
-			command_details = CommandDetails(name='test3', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test3')
 			test4 = Test4Command()
 
 		class Test2Command(Command):
-			command_details = CommandDetails(name='test2', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test2')
 			test3 = Test3Command()
 
 		class Test1Command(Command):
-			command_details = CommandDetails(name='test1', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test1')
 			test2 = Test2Command()
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			test1 = Test1Command()
 
 		returned_command = CommandParser(RootCommand()).parse(['test1', 'test2', 'test3', 'test4'])
@@ -566,12 +608,14 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_subcmd_with_string_arg_pass(self):
 
 		class TestCommand(Command):
-			command_details = CommandDetails(name='test', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test')
 			name = Argument[str](name='name', display_name='Name', description='', required=False, value='')
 			count = Argument[int](name='count', display_name='Count', description='', required=False, value=0)
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			test = TestCommand()
 
 		returned_command = CommandParser(RootCommand()).parse(['test', '--name', 'a test value'])
@@ -583,12 +627,14 @@ class TestCommandParser(unittest.TestCase):
 	def test_parse_subcmd_with_int_arg_pass(self):
 
 		class TestCommand(Command):
-			command_details = CommandDetails(name='test', display_name='', description='')
+			def __init__(self):
+				super().__init__(name='test')
 			name = Argument[str](name='name', display_name='Name', description='', required=False, value='')
 			count = Argument[int](name='count', display_name='Count', description='', required=False, value=0)
 
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			test = TestCommand()
 
 		returned_command = CommandParser(RootCommand()).parse(['test', '--count', '5545'])
@@ -599,7 +645,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_list_of_str_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			names = Argument[list[str]](name='names', display_name='Names', description='', required=False, value=[])
 		
 		returned_command = CommandParser(RootCommand()).parse(['--names', 'farfofu,blarara,bibabobabi'])
@@ -610,7 +657,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_list_of_int_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			things = Argument[list[int]](name='things', display_name='Things', description='', required=False, value=[])
 		
 		returned_command = CommandParser(RootCommand()).parse(['--things', '1,3,3,7'])
@@ -625,7 +673,8 @@ class TestCommandParser(unittest.TestCase):
 			B = 2
 			C = 3
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			things = Argument[list[TestEnum]](name='things', display_name='Things', description='', required=False, value=[])
 
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'A,B,B,C'])
@@ -636,7 +685,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_dict_of_str_str_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			things = Argument[dict[str,str]](name='things', display_name='Things', description='', required=False, value={})
 		
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'name=Wabla,last_name=Forfafui'])
@@ -647,7 +697,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_dict_of_str_int_arg_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			things = Argument[dict[str,int]](name='things', display_name='Things', description='', required=False, value={})
 		
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'a=1,b=3,c=3,d=7'])
@@ -662,7 +713,8 @@ class TestCommandParser(unittest.TestCase):
 			B = 2
 			C = 3
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			things = Argument[dict[str,TestEnum]](name='things', display_name='Things', description='', required=False, value={})
 
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'Liwia=A,Clementia=B,Jia=B,Pomare=C'])
@@ -673,7 +725,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_parse_cmd_with_dict_arg_missing_equal_fail(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			things = Argument[dict[str,str]](name='things', display_name='Things', description='', required=False, value={})
 		
 		with self.assertRaises(InvalidValueException):
@@ -685,7 +738,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_validate_command_duplicate_position_fail(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=0, name='arg2', display_name='Argument 2', description='', required=False)
 
@@ -694,7 +748,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_validate_command_position_not_starting_at_zero_fail(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=1, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=2, name='arg2', display_name='Argument 2', description='', required=False)
 
@@ -703,7 +758,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_validate_command_position_number_skip_fail(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=2, name='arg2', display_name='Argument 2', description='', required=False)
 
@@ -712,7 +768,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_validate_command_position_only_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
 
@@ -720,7 +777,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_validate_command_position_with_args_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](position=0, name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](position=1, name='arg2', display_name='Argument 2', description='', required=False)
 			arg3 = Argument[str](name='arg3', display_name='Argument 3', description='', required=False)
@@ -730,24 +788,12 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_validate_command_no_position_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='', required=False)
 			arg2 = Argument[str](name='arg2', display_name='Argument 2', description='', required=False)
 
 		CommandParser(RootCommand())
-
-	def test_validate_command_has_details_pass(self):
-		class RootCommand(Command):
-			command_details = BLANK_DETAILS
-
-		CommandParser(RootCommand())
-
-	def test_validate_command_has_no_details_fail(self):
-		class RootCommand(Command):
-			pass
-
-		with self.assertRaises(ValidationException):
-			CommandParser(RootCommand())
 
 	# endregion
 
@@ -755,7 +801,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_context_has_root_command_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 
 		returned_command = CommandParser(RootCommand()).parse([])
 
@@ -763,7 +810,8 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_context_root_cmd_has_no_parent_command_pass(self):
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 
 		returned_command = CommandParser(RootCommand()).parse([])
 
@@ -771,12 +819,15 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_context_sub_cmd_has_parent_command_pass(self):
 		class SubCommand2(Command):
-			command_details = CommandDetails(name='sub2', display_name='Sub Command 2', description='A sub command')
+			def __init__(self):
+				super().__init__(name='sub2')
 		class SubCommand1(Command):
-			command_details = CommandDetails(name='sub1', display_name='Sub Command 1', description='A sub command')
+			def __init__(self):
+				super().__init__(name='sub1')
 			sub = SubCommand2()
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			sub = SubCommand1()
 
 		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2'])
@@ -785,13 +836,16 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_context_sub_cmd_original_arguments_pass(self):
 		class SubCommand2(Command):
-			command_details = CommandDetails(name='sub2', display_name='Sub Command 2', description='A sub command')
+			def __init__(self):
+				super().__init__(name='sub2')
 			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='A test argument')
 		class SubCommand1(Command):
-			command_details = CommandDetails(name='sub1', display_name='Sub Command 1', description='A sub command')
+			def __init__(self):
+				super().__init__(name='sub1')
 			sub = SubCommand2()
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			sub = SubCommand1()
 
 		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2', '--arg1', 'test'])
@@ -800,13 +854,16 @@ class TestCommandParser(unittest.TestCase):
 
 	def test_context_sub_cmd_scoped_arguments_pass(self):
 		class SubCommand2(Command):
-			command_details = CommandDetails(name='sub2', display_name='Sub Command 2', description='A sub command')
+			def __init__(self):
+				super().__init__(name='sub2')
 			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='A test argument')
 		class SubCommand1(Command):
-			command_details = CommandDetails(name='sub1', display_name='Sub Command 1', description='A sub command')
+			def __init__(self):
+				super().__init__(name='sub1')
 			sub = SubCommand2()
 		class RootCommand(Command):
-			command_details = BLANK_DETAILS
+			def __init__(self):
+				super().__init__(name='root')
 			sub = SubCommand1()
 
 		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2', '--arg1', 'test'])

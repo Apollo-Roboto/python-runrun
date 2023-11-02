@@ -88,7 +88,7 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 			print(f'{Fore.RED}Missing multiple required arguments{Style.RESET_ALL}')
 
 		for arg in exception.missing_arguments:
-			print(f'  {arg.display_name} (--{arg.name})')
+			print(f'  {Style.BRIGHT}{arg.display_name}{Style.RESET_ALL} (--{arg.name})')
 			# TODO: the format here should be the same as the help format
 			# exception.command.help.print_argument(arg)
 
@@ -114,15 +114,12 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 		print('Do you mean:')
 
 		for arg in argument_suggestions:
-			print(f'  {arg.display_name} (--{arg.name})')
+			print(f'  {Style.BRIGHT}{arg.display_name}{Style.RESET_ALL} (--{arg.name})')
 			# TODO: the format here should be the same as the help format
 			# exception.command.help.print_argument(arg)
 		
 		for cmd in command_suggestions:
-			if cmd.command_details is None:
-				print(f'  None (None)')
-			else:
-				print(f'  {cmd.command_details.display_name} ({cmd.command_details.name})')
+			print(f'  {Style.BRIGHT}{cmd.command_display_name}{Style.RESET_ALL} ({cmd.command_name})')
 			# exception.command.help.print_command(arg)
 
 	def get_argument_suggestions(self, exception: UnknownArgumentException) -> list[Argument]:
@@ -139,10 +136,8 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 		suggestions = []
 
 		for sub_command in exception.command.get_sub_commands():
-			if sub_command.command_details is None:
-				continue
 
-			distance = Levenshtein.distance(exception.unknown_argument.lower(), sub_command.command_details.name.lower(), score_cutoff=2)
+			distance = Levenshtein.distance(exception.unknown_argument.lower(), sub_command.command_name.lower(), score_cutoff=2)
 			if distance <= 2:
 				suggestions.append(sub_command)
 

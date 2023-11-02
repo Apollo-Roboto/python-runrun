@@ -33,10 +33,6 @@ class CommandParser:
 
 	def validate_command(self):
 
-		# command contains a command_details
-		if self.command.command_details is None:
-			raise ValidationException('A command must define the command_details attribute')
-
 		# validate positions are in order and not duplicated
 		counter = 0
 
@@ -275,7 +271,7 @@ class CommandParser:
 
 		return args
 
-	def string_to_dict_instance(self, string_value: str, t: dict[str, type]) -> dict[str, type]:
+	def string_to_dict_instance(self, string_value: str, t: dict[str, type]) -> dict[str, object]:
 
 		kwargs = {}
 
@@ -370,17 +366,15 @@ class CommandParser:
 					return argument
 				
 		return None
-				
+
 	def get_matching_sub_command(self, arg: str) -> Optional[Command]:
 		arg = arg.lower()
 
 		for sub_command in self._sub_commands:
-			if sub_command.command_details is None:
-				continue
-			name = sub_command.command_details.name.lower()
+			name = sub_command.command_name.lower()
 			if name == arg:
 				return sub_command
-			aliases = [a.lower() for a in sub_command.command_details.aliases]
+			aliases = [a.lower() for a in sub_command.command_aliases]
 			if arg in aliases:
 				return sub_command
 		
