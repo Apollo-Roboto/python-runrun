@@ -45,6 +45,48 @@ class CommandParser:
 			else:
 				raise ValidationException('Positions must be incremental and unique, starting from 0')
 
+	def walk_and_set_arguments_values(self, args: list[str]):
+
+		i = -1
+		pos_i = 0
+		while i + 1 < len(args):
+			i += 1
+			arg = args[i]
+			
+			argument_by_name = self.get_matching_argument_by_name(arg)
+
+			# type is boolean followed by an argument
+			if argument_by_name and argument_by_name.type == bool and len(args) > i + 1 and args[i+1].startswith('-'):
+				argument_by_name.value = True
+				continue
+			
+			# type is boolean at the end of the list
+			if argument_by_name and argument_by_name.type == bool and len(args) <= i + 1:
+				argument_by_name.value = True
+				continue
+			
+			# any key value arguments
+			if argument_by_name and len(args) > i + 1:
+				try:
+					self.set_value_to_argument(argument_by_name, args[i+1])
+				except ValueError:
+					raise InvalidValueException(command=self.command, argument=argument_by_name, given_value=args[i+1])
+				i += 1
+				continue
+
+			argument_by_position = self.get_matching_argument_by_position(pos_i)
+
+			# any positional arguments
+			if argument_by_position:
+				try:
+					self.set_value_to_argument(argument_by_position, arg)
+				except ValueError:
+					raise InvalidValueException(command=self.command, argument=argument_by_position, given_value=arg)
+				pos_i += 1
+				continue
+
+			raise UnknownArgumentException(command=self.command, unknown_argument=arg)
+
 	def parse(self, args: Union[str, list[str]]) -> Command:
 		splitted_args: list[str] = []
 
@@ -70,49 +112,7 @@ class CommandParser:
 		# set the scoped argumetns for this command
 		self.command.context.scoped_arguments = splitted_args
 
-		# go through the arguments and find their values
-
-		positional_i = 0 # track the number of the positional
-		i = -1
-		while(True):
-			i += 1
-			if i >= len(args):
-				break
-			arg = args[i]
-
-			argument = self.get_matching_argument_by_name(arg)
-
-			if argument == None:
-				argument = self.get_matching_argument_by_position(positional_i)
-
-			# invalid argument
-			if argument == None:
-				raise UnknownArgumentException(command=self.command, unknown_argument=arg)
-
-			is_positional = argument.position != None
-			if is_positional:
-				positional_i += 1
-
-			# is there a value?
-			value = None
-			if not is_positional and i+1 < len(args):
-				value = args[i+1]
-			elif is_positional:
-				value = arg
-
-			# boolean argument could not have a value
-			if value != None and argument.type == bool and value.startswith('-'):
-				value = None
-			elif not is_positional:
-				i += 1
-
-			if value != None:
-				try:
-					self.set_value_to_argument(argument, value)
-				except ValueError:
-					raise InvalidValueException(command=self.command, argument=argument, given_value=value)
-			elif argument.type == bool:
-				argument.value = True
+		self.walk_and_set_arguments_values(splitted_args)
 
 		self.check_required()
 

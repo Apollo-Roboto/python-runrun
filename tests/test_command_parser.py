@@ -525,6 +525,18 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_str_positional_as_argument_pass(self):
+		class RootCommand(Command):
+			def __init__(self):
+				super().__init__(name='root')
+			arg = Argument[str](position=0, name='arg')
+
+		returned_command = CommandParser(RootCommand()).parse(['--arg', 'The color is yellow'])
+		expected_command = RootCommand()
+		expected_command.arg.value = 'The color is yellow'
+
+		self.assertEqual(returned_command, expected_command)
+
 	def test_parse_cmd_with_required_arg_pass(self):
 
 		class RootCommand(Command):
