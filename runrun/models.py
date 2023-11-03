@@ -10,8 +10,8 @@ class Argument(Generic[T]):
 
 	def __init__(self, *,
 		name: str,
-		display_name: str,
-		description: str,
+		display_name: str | None = None,
+		description: str = '',
 		required: bool = False,
 		aliases: list[str] = [],
 		short: Optional[str] = None,
@@ -19,6 +19,9 @@ class Argument(Generic[T]):
 		position: Optional[int] = None,
 		# str_to_type: Optional[Callable[[str], T]] = None,
 	) -> None:
+
+		if display_name is None:
+			display_name = name
 
 		self.name = name
 		self.display_name = display_name
@@ -60,7 +63,7 @@ class Command:
 		description: str = '',
 		aliases: list[str] = []
 	):
-		
+
 		# diplay name defaults to name
 		if not display_name:
 			display_name = name

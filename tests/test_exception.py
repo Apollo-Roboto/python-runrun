@@ -7,15 +7,15 @@ from runrun.exceptions import DefaultExceptionHandler
 class TestDefaultExceptionHandler(unittest.TestCase):
 
 	def test_get_argument_suggestions_pass(self):
-		arg1 = Argument[int](name='argument1', display_name='Argument 1', description='A test argument')
-		arg2 = Argument[str](name='argument2', display_name='Argument 2', description='A test argument')
-		arg3 = Argument[str](name='argument3', display_name='Argument 3', description='A test argument')
-		arg4 = Argument[str](name='argument4', display_name='Argument 4', description='A test argument')
-		arg5 = Argument[int](name='chrono', display_name='Chrono', description='A test argument')
+		arg1 = Argument[int](name='argument1')
+		arg2 = Argument[str](name='argument2')
+		arg3 = Argument[str](name='argument3')
+		arg4 = Argument[str](name='argument4')
+		arg5 = Argument[int](name='chrono')
 
 		class TCommand(Command):
 			def __init__(self):
-				super().__init__(name='test', display_name='Test', description='Test.')
+				super().__init__(name='test')
 			_arg1 = arg1
 			_arg2 = arg2
 			_arg3 = arg3
@@ -38,14 +38,14 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 			self.assertListEqual(expected_matches, returned_suggestions)
 
 	def test_get_argument_suggestions_no_match_pass(self):
-		arg1 = Argument[int](name='argument1', display_name='Argument 1', description='A test argument')
-		arg2 = Argument[str](name='argument2', display_name='Argument 2', description='A test argument')
-		arg3 = Argument[bool](name='argument3', display_name='Argument 3', description='A test argument')
-		arg4 = Argument[str](name='argument4', display_name='Argument 4', description='A test argument')
+		arg1 = Argument[int](name='argument1')
+		arg2 = Argument[str](name='argument2')
+		arg3 = Argument[bool](name='argument3')
+		arg4 = Argument[str](name='argument4')
 
 		class TCommand(Command):
 			def __init__(self):
-				super().__init__(name='test', display_name='Test', description='Test.')
+				super().__init__(name='test')
 			_arg1 = arg1
 			_arg2 = arg2
 			_arg3 = arg3
@@ -85,16 +85,16 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 
 		class TCommand(Command):
 			def __init__(self):
-				super().__init__(name='test', display_name='Test', description='Test.')
+				super().__init__(name='test')
 			_cmd1 = cmd1
 			_cmd2 = cmd2
 			_cmd3 = cmd3
 			_cmd4 = cmd4
 			_cmd5 = chronocmd
-			_arg1 = Argument[int](name='argument1', display_name='Argument 1', description='A test argument')
-			_arg2 = Argument[str](name='argument2', display_name='Argument 2', description='A test argument')
-			_arg3 = Argument[str](name='argument3', display_name='Argument 3', description='A test argument')
-			_arg4 = Argument[str](name='argument4', display_name='Argument 4', description='A test argument')
+			_arg1 = Argument[int](name='argument1')
+			_arg2 = Argument[str](name='argument2')
+			_arg3 = Argument[str](name='argument3')
+			_arg4 = Argument[str](name='argument4')
 
 		command = TCommand()
 		default_exception_handler = DefaultExceptionHandler()
@@ -136,10 +136,10 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 			_cmd2 = cmd2
 			_cmd3 = cmd3
 			_cmd4 = cmd4
-			_arg1 = Argument[int](name='argument1', display_name='Argument 1', description='A test argument')
-			_arg2 = Argument[str](name='argument2', display_name='Argument 2', description='A test argument')
-			_arg3 = Argument[str](name='argument3', display_name='Argument 3', description='A test argument')
-			_arg4 = Argument[str](name='argument4', display_name='Argument 4', description='A test argument')
+			_arg1 = Argument[int](name='argument1')
+			_arg2 = Argument[str](name='argument2')
+			_arg3 = Argument[str](name='argument3')
+			_arg4 = Argument[str](name='argument4')
 
 		command = TCommand()
 		default_exception_handler = DefaultExceptionHandler()

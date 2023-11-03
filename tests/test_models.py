@@ -6,14 +6,14 @@ class TestCommand(unittest.TestCase):
 
 	def test_equal_simple_pass(self):
 		class TCommand(Command):
-			def __init__(self): super().__init__(name='a', display_name='A', description='A test command')
+			def __init__(self): super().__init__(name='a')
 
 		self.assertEqual(TCommand(), TCommand())
 
 	def test_equal_with_same_arg_pass(self):
 		class TCommand(Command):
-			def __init__(self): super().__init__(name='a', display_name='A', description='A test command')
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument', required=True)
+			def __init__(self): super().__init__(name='a')
+			arg = Argument[str](name='arg', required=True)
 		
 		a = TCommand()
 		a.arg.value = 'test'
@@ -25,7 +25,7 @@ class TestCommand(unittest.TestCase):
 	def test_equal_with_diff_arg_pass(self):
 		class TCommand(Command):
 			def __init__(self): super().__init__(name='a')
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument', required=True)
+			arg = Argument[str](name='arg', required=True)
 		
 		a = TCommand()
 		a.arg.value = 'a value'
@@ -37,15 +37,15 @@ class TestCommand(unittest.TestCase):
 	def test_get_arguments_pass(self):
 		class TCommand(Command):
 			def __init__(self): super().__init__(name='a')
-			arg1 = Argument[str](name='arg1', display_name='Argument 1', description='A test argument', required=True)
-			arg2 = Argument[int](name='arg2', display_name='Argument 2', description='A test argument', required=False, value=5)
-			arg3 = Argument[float]( name='arg3',display_name='Argument 3',description='A test argument',required=True)
+			arg1 = Argument[str](name='arg1', required=True)
+			arg2 = Argument[int](name='arg2', value=5)
+			arg3 = Argument[float](name='arg3', required=True)
 		
 		returned_arguments = TCommand().get_arguments()
 		expected_arguments = [
-			Argument[str](name='arg1', display_name='Argument 1', description='A test argument', required=True),
-			Argument[int](name='arg2', display_name='Argument 2', description='A test argument', required=False, value=5),
-			Argument[float]( name='arg3',display_name='Argument 3',description='A test argument',required=True),
+			Argument[str](name='arg1', required=True),
+			Argument[int](name='arg2', value=5),
+			Argument[float](name='arg3', required=True),
 		]
 
 		self.assertEqual(returned_arguments, expected_arguments)
@@ -115,6 +115,6 @@ class TestContext(unittest.TestCase):
 class TestArgument(unittest.TestCase):
 
 	def test_str_pass(self):
-		year_arg = Argument[int](name='year', display_name='Year', description='test')
+		year_arg = Argument[int](name='year')
 		year_arg.value = 1234
 		self.assertEqual(f'{year_arg}', '1234')

@@ -133,7 +133,8 @@ class HelpCommand(Command):
 		for arg in positional_arguments:
 			text += f' <{arg.name}>'
 
-		if len(arguments) > 0:
+		# if there is non positional arguments
+		if len(arguments) - len(positional_arguments) > 0:
 			text += ' [arguments]'
 
 		return text

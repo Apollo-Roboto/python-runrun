@@ -21,7 +21,7 @@ class TestHelpCommand(unittest.TestCase):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
@@ -50,7 +50,7 @@ class TestHelpCommand(unittest.TestCase):
 				super().__init__(name='root')
 			help = HelpCommand()
 			cmd = SubCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
@@ -66,7 +66,7 @@ class TestHelpCommand(unittest.TestCase):
 				super().__init__(name='root')
 			help = HelpCommand()
 			cmd = SubCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.cmd.context = Context(parent_command=root, root_command=root)
@@ -78,13 +78,13 @@ class TestHelpCommand(unittest.TestCase):
 			def __init__(self):
 				super().__init__(name='subcmd')
 			help = HelpCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		class RootCommand(Command):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
 			cmd = SubCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.cmd.context = Context(parent_command=root, root_command=root)
@@ -105,7 +105,7 @@ class TestHelpCommand(unittest.TestCase):
 				super().__init__(name='root')
 			help = HelpCommand()
 			cmd = SubCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.cmd.context = Context(parent_command=root, root_command=root)
@@ -120,14 +120,14 @@ class TestHelpCommand(unittest.TestCase):
 			def __init__(self):
 				super().__init__(name='subcmd')
 			help = HelpCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 			cmd = TCommand()
 		class RootCommand(Command):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
 			cmd = SubCommand()
-			arg = Argument[str](name='arg', display_name='Argument', description='A test argument')
+			arg = Argument[str](name='arg')
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.cmd.context = Context(parent_command=root, root_command=root)
@@ -139,37 +139,49 @@ class TestHelpCommand(unittest.TestCase):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
-			arg = Argument[int](name='arg', display_name='Argument', position=0, description='A test argument')
+			arg = Argument[int](name='arg', position=0)
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
-		self.assertEqual('root <arg> [arguments]', root.help.get_usage())
+		self.assertEqual('root <arg>', root.help.get_usage())
+
+	def test_get_usage_one_positional_one_argument_pass(self):
+		class RootCommand(Command):
+			def __init__(self):
+				super().__init__(name='root')
+			help = HelpCommand()
+			arg1 = Argument[int](name='arg1', position=0)
+			arg2 = Argument[int](name='arg2')
+		root = RootCommand()
+		root.context = Context(root_command=root)
+		root.help.context = Context(parent_command=root,root_command=root)
+		self.assertEqual('root <arg1> [arguments]', root.help.get_usage())
 
 	def test_get_usage_two_positional_pass(self):
 		class RootCommand(Command):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
-			arg1 = Argument[int](name='arg1', display_name='Argument 1', position=0, description='A test argument')
-			arg2 = Argument[str](name='arg2', display_name='Argument 2', position=1, description='A test argument')
+			arg1 = Argument[int](name='arg1', position=0)
+			arg2 = Argument[str](name='arg2', position=1)
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
-		self.assertEqual('root <arg1> <arg2> [arguments]', root.help.get_usage())
+		self.assertEqual('root <arg1> <arg2>', root.help.get_usage())
 
 	def test_get_usage_two_positional_correct_order_pass(self):
 		class RootCommand(Command):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
-			arg1 = Argument[int](name='arg1', display_name='Argument 1', position=1, description='A test argument')
-			arg2 = Argument[str](name='arg2', display_name='Argument 2', position=0, description='A test argument')
-			arg3 = Argument[str](name='arg3', display_name='Argument 3', position=3, description='A test argument')
-			arg4 = Argument[str](name='arg4', display_name='Argument 4', position=2, description='A test argument')
+			arg1 = Argument[int](name='arg1', position=1)
+			arg2 = Argument[str](name='arg2', position=0)
+			arg3 = Argument[str](name='arg3', position=3)
+			arg4 = Argument[str](name='arg4', position=2)
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
-		self.assertEqual('root <arg2> <arg1> <arg4> <arg3> [arguments]', root.help.get_usage())
+		self.assertEqual('root <arg2> <arg1> <arg4> <arg3>', root.help.get_usage())
 
 	def test_get_usage_one_positional_with_sub_cmd_pass(self):
 		class TCommand(Command):
@@ -179,9 +191,9 @@ class TestHelpCommand(unittest.TestCase):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
-			arg = Argument[int](name='arg', display_name='Argument', position=0, description='A test argument')
+			arg = Argument[int](name='arg', position=0)
 			cmd = TCommand()
 		root = RootCommand()
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
-		self.assertEqual('root [command] <arg> [arguments]', root.help.get_usage())
+		self.assertEqual('root [command] <arg>', root.help.get_usage())
