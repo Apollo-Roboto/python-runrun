@@ -10,13 +10,13 @@ import sys
 
 from colorama import Fore, Style, Back
 
-from runrun.models import Command, Argument
+from runrun.models import BaseCommand, Argument
 
 class HelpFormat(Enum):
 	STD = 0
 	JSON = 1
 
-class HelpCommand(Command):
+class HelpCommand(BaseCommand):
 
 	format = Argument[HelpFormat](
 		name='format',
@@ -107,7 +107,7 @@ class HelpCommand(Command):
 
 		print(json.dumps(data, indent='  '))
 
-	def get_full_command_name(self, command: Command) -> str:
+	def get_full_command_name(self, command: BaseCommand) -> str:
 		if command.context.parent_command == None:
 			return command.command_name
 
@@ -181,7 +181,7 @@ class HelpCommand(Command):
 		for line in text[1:]:
 			print(f"  {Style.BRIGHT}{line[0]}  {Style.DIM}{line[1]}{Style.RESET_ALL}   {line[2]}")
 
-	def print_command(self, cmd: Command):
+	def print_command(self, cmd: BaseCommand):
 		aliases_text = ', '.join(cmd.command_aliases)
 		
 		columns = [
@@ -265,7 +265,7 @@ class HelpCommand(Command):
 
 		return arguments
 
-	def get_parent_sub_commands(self) -> list[Command]:
+	def get_parent_sub_commands(self) -> list[BaseCommand]:
 		if self.context.parent_command is None:
 			return []
 
@@ -323,7 +323,7 @@ class HelpCommand(Command):
 
 
 
-class InfoCommand(Command):
+class InfoCommand(BaseCommand):
 
 	def __init__(self):
 		super().__init__(
@@ -335,7 +335,7 @@ class InfoCommand(Command):
 	def run(self):
 		print('IDK')
 
-class VersionCommand(Command):
+class VersionCommand(BaseCommand):
 
 	def __init__(self):
 		super().__init__(

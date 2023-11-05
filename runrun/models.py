@@ -53,7 +53,7 @@ class Argument(Generic[T]):
 	def __str__(self):
 		return str(self.value)
 
-class Command:
+class BaseCommand:
 
 	# command_details: Optional[CommandDetails] = None
 
@@ -101,15 +101,15 @@ class Command:
 
 	def run(self):
 		help = getattr(self, 'help')
-		if help in Command.__subclasses__():
+		if help in BaseCommand.__subclasses__():
 			help(self).run()
 
-	def get_sub_commands(self) -> list['Command']:
+	def get_sub_commands(self) -> list['BaseCommand']:
 		sub_commands = []
 
 		for key, value in inspect.getmembers(self):
 
-			if isinstance(value, Command):
+			if isinstance(value, BaseCommand):
 				sub_commands.append(value)
 
 		return sub_commands
@@ -127,10 +127,10 @@ class Command:
 class Context:
 	# application: Application
 	def __init__(self,
-		root_command: Optional[Command] = None,
+		root_command: Optional[BaseCommand] = None,
 		original_arguments: list[str] = [],
 		scoped_arguments: list[str] = [],
-		parent_command: Optional[Command] = None,
+		parent_command: Optional[BaseCommand] = None,
 	) -> None:
 		self.root_command = root_command
 		self.original_arguments = original_arguments

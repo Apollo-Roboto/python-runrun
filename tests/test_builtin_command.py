@@ -2,12 +2,12 @@ import unittest
 
 from runrun.builtin_command import HelpCommand
 from runrun.command_parser import CommandParser
-from runrun.models import Command, Argument, Context
+from runrun.models import BaseCommand, Argument, Context
 
 class TestHelpCommand(unittest.TestCase):
 
 	def test_get_usage_nothing_pass(self):
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -17,7 +17,7 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root', root.help.get_usage())
 
 	def test_get_usage_one_arg_pass(self):
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -28,10 +28,10 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root [arguments]', root.help.get_usage())
 
 	def test_get_usage_one_sub_command_pass(self):
-		class SubCommand(Command):
+		class SubCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='subcmd')
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -42,10 +42,10 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root [command]', root.help.get_usage())
 
 	def test_get_usage_one_sub_command_one_arg_pass(self):
-		class SubCommand(Command):
+		class SubCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='subcmd')
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -57,11 +57,11 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root [command] [arguments]', root.help.get_usage())
 
 	def test_get_usage_sub_cmd_nothing_pass(self):
-		class SubCommand(Command):
+		class SubCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='subcmd')
 			help = HelpCommand()
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -74,12 +74,12 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root subcmd', root.cmd.help.get_usage())
 
 	def test_get_usage_sub_cmd_one_arg_pass(self):
-		class SubCommand(Command):
+		class SubCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='subcmd')
 			help = HelpCommand()
 			arg = Argument[str](name='arg')
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -92,15 +92,15 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root subcmd [arguments]', root.cmd.help.get_usage())
 
 	def test_get_usage_sub_cmd_one_sub_command_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='t')
-		class SubCommand(Command):
+		class SubCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='subcmd')
 			help = HelpCommand()
 			cmd = TCommand()
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -113,16 +113,16 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root subcmd [command]', root.cmd.help.get_usage())
 
 	def test_get_usage_sub_cmd_one_sub_command_one_arg_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='t')
-		class SubCommand(Command):
+		class SubCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='subcmd')
 			help = HelpCommand()
 			arg = Argument[str](name='arg')
 			cmd = TCommand()
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -135,7 +135,7 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root subcmd [command] [arguments]', root.cmd.help.get_usage())
 
 	def test_get_usage_one_positional_pass(self):
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -146,7 +146,7 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root <arg>', root.help.get_usage())
 
 	def test_get_usage_one_positional_one_argument_pass(self):
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -158,7 +158,7 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root <arg1> [arguments]', root.help.get_usage())
 
 	def test_get_usage_two_positional_pass(self):
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -170,7 +170,7 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root <arg1> <arg2>', root.help.get_usage())
 
 	def test_get_usage_two_positional_correct_order_pass(self):
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()
@@ -184,10 +184,10 @@ class TestHelpCommand(unittest.TestCase):
 		self.assertEqual('root <arg2> <arg1> <arg4> <arg3>', root.help.get_usage())
 
 	def test_get_usage_one_positional_with_sub_cmd_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='t')
-		class RootCommand(Command):
+		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
 			help = HelpCommand()

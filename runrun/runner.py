@@ -1,12 +1,12 @@
 import sys
 
-from runrun.models import Command
+from runrun.models import BaseCommand
 from runrun.command_parser import CommandParser
 from runrun.exceptions import CLIException, DefaultExceptionHandler, BaseExceptionHandler
 
 class Runner:
 	def __init__(self,
-		command: Command,
+		command: BaseCommand,
 		exception_handler: BaseExceptionHandler = DefaultExceptionHandler(),
 	):
 		self.command = command

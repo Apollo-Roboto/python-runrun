@@ -1,6 +1,6 @@
 import unittest
 
-from runrun.models import Command, Argument
+from runrun.models import BaseCommand, Argument
 from runrun.exceptions import UnknownArgumentException
 from runrun.exceptions import DefaultExceptionHandler
 
@@ -13,7 +13,7 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 		arg4 = Argument[str](name='argument4')
 		arg5 = Argument[int](name='chrono')
 
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='test')
 			_arg1 = arg1
@@ -43,7 +43,7 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 		arg3 = Argument[bool](name='argument3')
 		arg4 = Argument[str](name='argument4')
 
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='test')
 			_arg1 = arg1
@@ -62,28 +62,28 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 		self.assertListEqual([], returned_suggestions)
 
 	def test_get_sub_command_suggestions_pass(self):
-		class SubCommand1(Command):
+		class SubCommand1(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd1')
 		cmd1 = SubCommand1()
-		class SubCommand2(Command):
+		class SubCommand2(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd2')
 		cmd2 = SubCommand2()
-		class SubCommand3(Command):
+		class SubCommand3(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd3')
 		cmd3 = SubCommand3()
-		class SubCommand4(Command):
+		class SubCommand4(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd4')
 		cmd4 = SubCommand4()
-		class ChronoCommand(Command):
+		class ChronoCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='chrono')
 		chronocmd = ChronoCommand()
 
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='test')
 			_cmd1 = cmd1
@@ -112,24 +112,24 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 			self.assertListEqual(expected_matches, returned_suggestions)
 
 	def test_get_sub_command_suggestions_no_match_pass(self):
-		class SubCommand1(Command):
+		class SubCommand1(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd1')
 		cmd1 = SubCommand1()
-		class SubCommand2(Command):
+		class SubCommand2(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd2')
 		cmd2 = SubCommand2()
-		class SubCommand3(Command):
+		class SubCommand3(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd3')
 		cmd3 = SubCommand3()
-		class SubCommand4(Command):
+		class SubCommand4(BaseCommand):
 			def __init__(self):
 				super().__init__(name='cmd4')
 		cmd4 = SubCommand4()
 
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='test')
 			_cmd1 = cmd1

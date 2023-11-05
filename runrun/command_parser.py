@@ -8,11 +8,11 @@ from pathlib import Path
 import copy
 import sys
 
-from runrun.models import Command, Argument, Context
+from runrun.models import BaseCommand, Argument, Context
 from runrun.exceptions import ParserException, ValidationException, UnknownArgumentException, MissingArgumentException, InvalidValueException
 
 class CommandParser:
-	def __init__(self, command: Command, parent_command: Optional[Command] = None) -> None:
+	def __init__(self, command: BaseCommand, parent_command: Optional[BaseCommand] = None) -> None:
 		self.command = command
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
@@ -87,7 +87,7 @@ class CommandParser:
 
 			raise UnknownArgumentException(command=self.command, unknown_argument=arg)
 
-	def parse(self, args: Union[str, list[str]]) -> Command:
+	def parse(self, args: Union[str, list[str]]) -> BaseCommand:
 		splitted_args: list[str] = []
 
 		# make sure to use a list
@@ -367,7 +367,7 @@ class CommandParser:
 				
 		return None
 
-	def get_matching_sub_command(self, arg: str) -> Optional[Command]:
+	def get_matching_sub_command(self, arg: str) -> Optional[BaseCommand]:
 		arg = arg.lower()
 
 		for sub_command in self._sub_commands:

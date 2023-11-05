@@ -1,17 +1,17 @@
 import unittest
 
-from runrun.models import Argument, Command, Context
+from runrun.models import Argument, BaseCommand, Context
 
 class TestCommand(unittest.TestCase):
 
 	def test_equal_simple_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
 
 		self.assertEqual(TCommand(), TCommand())
 
 	def test_equal_with_same_arg_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
 			arg = Argument[str](name='arg', required=True)
 		
@@ -23,7 +23,7 @@ class TestCommand(unittest.TestCase):
 		self.assertEqual(a, b)
 
 	def test_equal_with_diff_arg_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
 			arg = Argument[str](name='arg', required=True)
 		
@@ -35,7 +35,7 @@ class TestCommand(unittest.TestCase):
 		self.assertNotEqual(a, b)
 
 	def test_get_arguments_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
 			arg1 = Argument[str](name='arg1', required=True)
 			arg2 = Argument[int](name='arg2', value=5)
@@ -51,13 +51,13 @@ class TestCommand(unittest.TestCase):
 		self.assertEqual(returned_arguments, expected_arguments)
 
 	def test_get_sub_commands_pass(self):
-		class Sub_command_1(Command):
+		class Sub_command_1(BaseCommand):
 			def __init__(self): super().__init__(name='a')
-		class Sub_command_2(Command):
+		class Sub_command_2(BaseCommand):
 			def __init__(self): super().__init__(name='b')
-		class Sub_command_3(Command):
+		class Sub_command_3(BaseCommand):
 			def __init__(self): super().__init__(name='c')
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='test')
 			cmd1 = Sub_command_1()
 			cmd2 = Sub_command_2()
@@ -75,7 +75,7 @@ class TestCommand(unittest.TestCase):
 class TestContext(unittest.TestCase):
 	
 	def test_equal_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='t')
 
 		context1 = Context(
@@ -93,7 +93,7 @@ class TestContext(unittest.TestCase):
 		self.assertEqual(context1, context2)
 
 	def test_unequal_pass(self):
-		class TCommand(Command):
+		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='t')
 
 		context1 = Context(

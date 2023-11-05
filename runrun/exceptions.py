@@ -3,27 +3,27 @@ from enum import Enum
 import Levenshtein
 from colorama import Fore, Style
 
-from runrun.models import Command, Argument
+from runrun.models import BaseCommand, Argument
 
 class CLIException(Exception): pass
 
 class ParserException(CLIException):
-	def __init__(self, command: Command, *args: object) -> None:
+	def __init__(self, command: BaseCommand, *args: object) -> None:
 		self.command = command
 		super().__init__(*args)
 
 class UnknownArgumentException(ParserException):
-	def __init__(self, command: Command, unknown_argument: str = '') -> None:
+	def __init__(self, command: BaseCommand, unknown_argument: str = '') -> None:
 		super().__init__(command, f'Unknown argument \'{unknown_argument}\'')
 		self.unknown_argument = unknown_argument
 
 class MissingArgumentException(ParserException):
-	def __init__(self, command: Command, missing_arguments: list[Argument] = []) -> None:
+	def __init__(self, command: BaseCommand, missing_arguments: list[Argument] = []) -> None:
 		super().__init__(command, f'Missing required arguments: {", ".join([arg.name for arg in missing_arguments])}')
 		self.missing_arguments = missing_arguments
 
 class InvalidValueException(ParserException):
-	def __init__(self, command: Command, argument: Argument, given_value: str) -> None:
+	def __init__(self, command: BaseCommand, argument: Argument, given_value: str) -> None:
 		super().__init__(command, f'Invalid value given for argument \'{argument.name}\'')
 		self.argument = argument
 		self.given_value = given_value
@@ -98,7 +98,7 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 		# exception.command.help.print_usage()
 
 		argument_suggestions: list[Argument] = []
-		command_suggestions: list[Command] = []
+		command_suggestions: list[BaseCommand] = []
 
 		if exception.unknown_argument.startswith('--'):
 			print(f'{Fore.RED}Unknown argument \'{exception.unknown_argument}\'{Style.RESET_ALL}')
@@ -132,7 +132,7 @@ class DefaultExceptionHandler(BaseExceptionHandler):
 
 		return suggestions
 
-	def get_sub_command_suggestions(self, exception: UnknownArgumentException) -> list[Command]:
+	def get_sub_command_suggestions(self, exception: UnknownArgumentException) -> list[BaseCommand]:
 		suggestions = []
 
 		for sub_command in exception.command.get_sub_commands():
