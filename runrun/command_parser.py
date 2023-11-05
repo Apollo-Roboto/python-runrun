@@ -204,6 +204,9 @@ class CommandParser:
 				# keyword argument should not be in the args list
 				args.remove(arg)
 
+				if key_value[0] in kwargs:
+					raise ValueError('Duplicated key')
+				
 				kwargs[key_value[0]] = key_value[1]
 
 		# this part is to convert the argument to the expected type
@@ -297,7 +300,7 @@ class CommandParser:
 
 			# if it did not split, it's not valid
 			if len(key_value) <= 1:
-				raise ValueError('not a valid key=value pair')
+				raise ValueError('Not a valid key=value pair')
 
 			# replace escaped equals to equals
 			key = key_value[0].replace(r'\=', '=')

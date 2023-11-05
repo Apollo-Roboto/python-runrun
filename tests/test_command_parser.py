@@ -391,6 +391,24 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command, expected_command)
 
+	def test_parse_cmd_with_custom_class_arg_duplicated_key_arg_fail(self):
+
+		class Robot:
+			def __init__(self, name: str):
+				self.name = name
+			def __eq__(self, other):
+				return self.name == other.name
+			def __repr__(self):
+				return self.name
+
+		class RootCommand(BaseCommand):
+			def __init__(self):
+				super().__init__(name='root')
+			arg = Argument[Robot](name='arg')
+
+		with self.assertRaises(InvalidValueException):
+			CommandParser(RootCommand()).parse(['--arg', 'name=zurbafo,name=wablah'])
+
 	def test_parse_cmd_with_str_positional_pass(self):
 		class RootCommand(BaseCommand):
 			def __init__(self):
