@@ -124,6 +124,23 @@ class BaseCommand:
 
 		return arguments
 
+class BaseApplication(BaseCommand):
+
+	def __init__(self,
+		name: str,
+		version: str = '',
+		author: str = '',
+		website: str = '',
+		copyright: str = '',
+		display_name: str | None = None,
+		description: str = '',
+	):
+		super().__init__(name, display_name, description, [])
+		self.application_version = version
+		self.application_author = author
+		self.application_website = website
+		self.application_copyright = copyright
+
 class Context:
 	# application: Application
 	def __init__(self,

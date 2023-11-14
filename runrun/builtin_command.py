@@ -10,11 +10,15 @@ import sys
 
 from colorama import Fore, Style, Back
 
-from runrun.models import BaseCommand, Argument
+from runrun.models import BaseCommand, Argument, BaseApplication
+
+
 
 class HelpFormat(Enum):
 	STD = 0
 	JSON = 1
+
+
 
 class HelpCommand(BaseCommand):
 
@@ -99,6 +103,7 @@ class HelpCommand(BaseCommand):
 
 		data['application'] = {
 			'name': 'IDK',
+			'display_name': 'IDK',
 			'version': 'IDK',
 			'description': 'IDK',
 			'author': 'IDK',
@@ -311,18 +316,6 @@ class HelpCommand(BaseCommand):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 class InfoCommand(BaseCommand):
 
 	def __init__(self):
@@ -333,7 +326,24 @@ class InfoCommand(BaseCommand):
 		)
 
 	def run(self):
-		print('IDK')
+		if not isinstance(self.context.parent_command, BaseApplication):
+			print(f'Could not find version, parent command is not {BaseApplication}')
+			return
+
+		print(f'\n{Style.BRIGHT}{Back.WHITE} {self.context.parent_command.command_display_name} {Style.RESET_ALL}\n')
+
+		if self.context.parent_command.application_version:
+			print(f'  {Style.BRIGHT}Version{Style.RESET_ALL}:   {self.context.parent_command.application_version}')
+		if self.context.parent_command.application_website:
+			print(f'  {Style.BRIGHT}Website{Style.RESET_ALL}:   {self.context.parent_command.application_website}')
+		if self.context.parent_command.application_author:
+			print(f'  {Style.BRIGHT}Author{Style.RESET_ALL}:    {self.context.parent_command.application_author}')
+		if self.context.parent_command.application_copyright:
+			print(f'  {Style.BRIGHT}Copyright{Style.RESET_ALL}: {self.context.parent_command.application_copyright}')
+		
+		print()
+
+
 
 class VersionCommand(BaseCommand):
 
@@ -345,4 +355,9 @@ class VersionCommand(BaseCommand):
 		)
 
 	def run(self):
-		print('IDK')
+		if not isinstance(self.context.parent_command, BaseApplication):
+			print(f'Could not find version, parent command is not {BaseApplication}')
+			return
+
+		version = self.context.parent_command.application_version
+		print(version)
