@@ -17,13 +17,12 @@ class CommandParser:
 		self._sub_commands = self.command.get_sub_commands()
 		self._arguments = self.command.get_arguments()
 
-		self.command.context = Context(
-			parent_command=parent_command,
-		)
-
-		# pass down the original arguments
+		# pass the context from the parent command
 		if parent_command is not None:
 			self.command.context.original_arguments = parent_command.context.original_arguments
+			self.command.context.root_command = parent_command.context.root_command
+
+		self.command.context.parent_command = parent_command
 
 		# set the root command
 		if self.command.context.root_command == None:

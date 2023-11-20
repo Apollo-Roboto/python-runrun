@@ -864,6 +864,23 @@ class TestCommandParser(unittest.TestCase):
 
 		self.assertEqual(returned_command.context.parent_command, SubCommand1())
 
+	def test_context_sub_cmd_has_root_command_pass(self):
+		class SubCommand2(BaseCommand):
+			def __init__(self):
+				super().__init__(name='sub2')
+		class SubCommand1(BaseCommand):
+			def __init__(self):
+				super().__init__(name='sub1')
+			sub = SubCommand2()
+		class RootCommand(BaseCommand):
+			def __init__(self):
+				super().__init__(name='root')
+			sub = SubCommand1()
+
+		returned_command = CommandParser(RootCommand()).parse(['sub1', 'sub2'])
+
+		self.assertEqual(returned_command.context.root_command, RootCommand())
+
 	def test_context_sub_cmd_original_arguments_pass(self):
 		class SubCommand2(BaseCommand):
 			def __init__(self):

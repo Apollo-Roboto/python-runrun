@@ -1,6 +1,6 @@
 import unittest
 
-from runrun.builtin_command import HelpCommand
+from runrun.builtin_command import HelpCommand, InfoCommand, VersionCommand
 from runrun.command_parser import CommandParser
 from runrun.models import BaseCommand, Argument, Context
 
@@ -197,3 +197,30 @@ class TestHelpCommand(unittest.TestCase):
 		root.context = Context(root_command=root)
 		root.help.context = Context(parent_command=root,root_command=root)
 		self.assertEqual('root [command] <arg>', root.help.get_usage())
+
+	def test_calling_help_pass(self):
+		class RootCommand(BaseCommand):
+			def __init__(self):
+				super().__init__(name='root')
+			help = HelpCommand()
+
+		command = CommandParser(RootCommand()).parse(['help'])
+		command.run()
+
+	def test_calling_info_pass(self):
+		class RootCommand(BaseCommand):
+			def __init__(self):
+				super().__init__(name='root')
+			info = InfoCommand()
+
+		command = CommandParser(RootCommand()).parse(['info'])
+		command.run()
+
+	def test_calling_version_pass(self):
+		class RootCommand(BaseCommand):
+			def __init__(self):
+				super().__init__(name='root')
+			version = VersionCommand()
+
+		command = CommandParser(RootCommand()).parse(['version'])
+		command.run()
