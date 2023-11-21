@@ -102,18 +102,19 @@ class HelpCommand(BaseCommand):
 		data['usage'] = self.get_usage()
 
 		data['application'] = {
-			'name': 'IDK',
-			'display_name': 'IDK',
-			'version': 'IDK',
-			'description': 'IDK',
-			'author': 'IDK',
-			'website': 'IDK',
-		}
+			'name': root_command.command_name,
+			'display_name': root_command.command_display_name,
+			'description': root_command.command_description,
+			'version': root_command.application_version,
+			'author': root_command.application_author,
+			'website': root_command.application_website,
+			'copyright': root_command.application_copyright,
+		} if isinstance(root_command, BaseApplication) else None
 
 		print(json.dumps(data, indent='  '))
 
 	def get_full_command_name(self, command: BaseCommand) -> str:
-		if command.context.parent_command == None:
+		if command.context.parent_command is None:
 			return command.command_name
 
 		return self.get_full_command_name(command.context.parent_command) + ' ' + command.command_name
