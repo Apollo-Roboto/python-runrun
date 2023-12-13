@@ -1,5 +1,5 @@
 
-from runrun.models import BaseCommand, BaseApplication
+from runrun.models import BaseCommand, BaseApplication, Argument
 from runrun.builtin_command import HelpCommand, VersionCommand, InfoCommand
 
 class Command(BaseCommand):
