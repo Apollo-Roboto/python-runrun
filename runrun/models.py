@@ -12,13 +12,14 @@ class Argument(Generic[T]):
 		name: str,
 		display_name: str | None = None,
 		description: str = '',
-		required: bool = False,
 		aliases: list[str] = [],
 		short: Optional[str] = None,
-		value: Optional[T] = None,
+		default_value: Optional[T] = None,
 		position: Optional[int] = None,
 		# str_to_type: Optional[Callable[[str], T]] = None,
 	) -> None:
+		
+		self._type: Optional[Type[T]] = None
 
 		if display_name is None:
 			display_name = name
@@ -26,15 +27,37 @@ class Argument(Generic[T]):
 		self.name = name
 		self.display_name = display_name
 		self.description = description
-		self.required = required
+		
 		self.aliases = aliases
 		self.short = short
-		self.value = value
+		# self.value: Optional[T] = default_value # type: ignore
 		self.position = position
+
+		if default_value is not None:
+			self.default_value: T = default_value
 
 		# self.str_to_type = str_to_type
 
-		self._type: Optional[Type[T]] = None
+		self.required = not Argument._is_type_optional(self.type)
+
+
+
+	@property
+	def value(self) -> T:
+		
+		# TODO DEAL WITH THIS
+		return self.value
+	
+	@classmethod
+	def _is_type_optional(cls, t: Type):
+		"""
+		Returns true if the type is optional
+		Examples:
+		  - `Union[int, None]` -> `True`
+		  - `Path` -> `False`
+		  - `Optional[str]` -> `True`
+		"""
+		return type(None) in typing.get_args(t)
 
 	@property
 	def type(self) -> Type[T]:
