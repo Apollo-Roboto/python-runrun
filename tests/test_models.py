@@ -14,7 +14,7 @@ class TestCommand(unittest.TestCase):
 	def test_equal_with_same_arg_pass(self):
 		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
-			arg = Argument[str](name='arg')
+			arg = Argument(str, 'arg')
 		
 		a = TCommand()
 		a.arg.value = 'test'
@@ -26,7 +26,7 @@ class TestCommand(unittest.TestCase):
 	def test_equal_with_diff_arg_pass(self):
 		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
-			arg = Argument[str](name='arg')
+			arg = Argument(str, 'arg')
 		
 		a = TCommand()
 		a.arg.value = 'a value'
@@ -38,15 +38,15 @@ class TestCommand(unittest.TestCase):
 	def test_get_arguments_pass(self):
 		class TCommand(BaseCommand):
 			def __init__(self): super().__init__(name='a')
-			arg1 = Argument[str](name='arg1')
-			arg2 = Argument[int](name='arg2', default_value=5)
-			arg3 = Argument[float](name='arg3')
+			arg1 = Argument(str, 'arg1')
+			arg2 = Argument(int, 'arg2', default_value=5)
+			arg3 = Argument(float, 'arg3')
 		
 		returned_arguments = TCommand().get_arguments()
 		expected_arguments = [
-			Argument[str](name='arg1'),
-			Argument[int](name='arg2', default_value=5),
-			Argument[float](name='arg3'),
+			Argument(str, 'arg1'),
+			Argument(int, 'arg2', default_value=5),
+			Argument(float, 'arg3'),
 		]
 
 		self.assertEqual(returned_arguments, expected_arguments)
@@ -116,17 +116,6 @@ class TestContext(unittest.TestCase):
 class TestArgument(unittest.TestCase):
 
 	def test_str_pass(self):
-		year_arg = Argument[int](name='year', default_value=1234)
-		self.assertEqual(f'{year_arg}', '1234')
-
-	def test_optional_type_makes_required_false_pass(self):
-		year_arg = Argument[Optional[int]](name='year')
-		self.assertEqual(year_arg.required, False)
-
-	def test_no_optional_type_makes_required_true_pass(self):
-		year_arg = Argument[int](name='year')
-		self.assertEqual(year_arg.required, True)
-
-	def test_no_optional_type_with_default_makes_required_false_pass(self):
-		year_arg = Argument[int](name='year', default_value=1234)
-		self.assertEqual(year_arg.required, False)
+		year_arg = Argument(int, 'year')
+		year_arg.value = 1234
+		self.assertEqual(str(year_arg), '1234')

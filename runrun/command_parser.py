@@ -120,7 +120,7 @@ class CommandParser:
 	def check_required(self):
 		required_missing: list[Argument] = []
 		for arg in self._arguments:
-			if arg.required == True and arg.value is None:
+			if arg.required == True and arg._value is None:
 				required_missing.append(arg)
 		if len(required_missing) > 0:
 			raise MissingArgumentException(command=self.command, missing_arguments=required_missing)
@@ -331,12 +331,12 @@ class CommandParser:
 
 		argument.value = self.string_to_primitive_instance(value, argument.type)
 
-		if argument.value != None:
+		if argument._value is not None:
 			return
 
 		argument.value = self.string_to_known_instance(value, argument.type)
 
-		if argument.value != None:
+		if argument._value is not None:
 			return
 
 		argument.value = self.string_to_unknown_instance(value, argument.type)

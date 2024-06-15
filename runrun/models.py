@@ -1,6 +1,5 @@
-from typing import TypeVar, Generic, Optional, Callable, Type
+from typing import TypeVar, Generic, Optional, Union
 import typing
-from dataclasses import dataclass, field
 import inspect
 import copy
 
@@ -8,18 +7,21 @@ T = TypeVar('T')
 
 class Argument(Generic[T]):
 
-	def __init__(self, *,
+	def __init__(self,
+		t: type[T],
 		name: str,
+		*,
 		display_name: str | None = None,
 		description: str = '',
 		aliases: list[str] = [],
 		short: Optional[str] = None,
-		default_value: Optional[T] = None,
+		default_value: T = None, # type: ignore
 		position: Optional[int] = None,
+		required: bool = True,
 		# str_to_type: Optional[Callable[[str], T]] = None,
 	) -> None:
-		
-		self._type: Optional[Type[T]] = None
+
+		self.type = t
 
 		if display_name is None:
 			display_name = name
@@ -30,48 +32,39 @@ class Argument(Generic[T]):
 		
 		self.aliases = aliases
 		self.short = short
-		# self.value: Optional[T] = default_value # type: ignore
 		self.position = position
 
 		if default_value is not None:
 			self.default_value: T = default_value
+			self.required = False
+			self._value: T = default_value
+		else:
+			self.required = required
+
+			# value will be populated later
+			self._value: T = None # type: ignore
 
 		# self.str_to_type = str_to_type
-
-		self.required = not Argument._is_type_optional(self.type)
 
 
 
 	@property
 	def value(self) -> T:
-		
-		# TODO DEAL WITH THIS
-		return self.value
+		if self._value is None:
+			raise Exception('_value was never set')
+		return self._value
 	
-	@classmethod
-	def _is_type_optional(cls, t: Type):
-		"""
-		Returns true if the type is optional
-		Examples:
-		  - `Union[int, None]` -> `True`
-		  - `Path` -> `False`
-		  - `Optional[str]` -> `True`
-		"""
-		return type(None) in typing.get_args(t)
-
-	@property
-	def type(self) -> Type[T]:
-		if self._type == None:
-			# pylint: disable=E1101
-			self._type = typing.get_args(self.__orig_class__)[0] # type: ignore
-			# pylint: enable=E1101
-		return self._type # type: ignore
+	@value.setter
+	def value(self, value: T):
+		if value is None:
+			raise Exception('value cannot be None')
+		self._value = value
 
 	def __eq__(self, other: object) -> bool:
 		if not isinstance(other, self.__class__):
 			return False
 
-		return self.value == other.value
+		return self._value == other._value
 
 	def __str__(self):
 		return str(self.value)

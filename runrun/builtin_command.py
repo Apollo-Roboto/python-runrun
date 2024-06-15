@@ -22,28 +22,23 @@ class HelpFormat(Enum):
 
 class HelpCommand(BaseCommand):
 
-	format = Argument[HelpFormat](
-		name='format',
+	format = Argument(HelpFormat, 'format',
 		display_name='Output Format',
 		description='The output format of the command details',
 		short='f',
-		required=False,
-		value=HelpFormat.STD,
+		default_value=HelpFormat.STD,
 	)
 
-	filter = Argument[str](
-		name='filter',
+	filter = Argument(str, 'filter',
 		display_name='Filter',
 		description='Filter the help results, this can help to find what you are looking for',
-		required=False,
-		value='',
+		default_value='',
 	)
 
-	required_only = Argument[bool](
-		name='required-only',
+	required_only = Argument(bool, 'required-only',
 		display_name='Required Only',
 		description='Only show required arguments',
-		value=False,
+		default_value=False,
 	)
 
 	def __init__(self, help_of_help=True):
@@ -67,7 +62,7 @@ class HelpCommand(BaseCommand):
 
 		arguments = self.get_parent_arguments()
 		sub_commands = self.get_parent_sub_commands()
-		
+
 		data['command'] = {
 			'name': parent_command.command_name,
 			'display_name': parent_command.command_display_name,
