@@ -321,20 +321,20 @@ class CommandParser:
 
 		# handle lists
 		if typing.get_origin(argument.type) == list:
-			argument.value = self.string_to_list_instance(value, argument.type)
+			argument._value = self.string_to_list_instance(value, argument.type)
 			return
 		
 		# handle dicts
 		if typing.get_origin(argument.type) == dict:
-			argument.value = self.string_to_dict_instance(value, argument.type)
+			argument._value = self.string_to_dict_instance(value, argument.type)
 			return
 
-		argument.value = self.string_to_primitive_instance(value, argument.type)
+		argument._value = self.string_to_primitive_instance(value, argument.type)
 
 		if argument._value is not None:
 			return
 
-		argument.value = self.string_to_known_instance(value, argument.type)
+		argument._value = self.string_to_known_instance(value, argument.type)
 
 		if argument._value is not None:
 			return
