@@ -7,11 +7,11 @@ from runrun.exceptions import DefaultExceptionHandler
 class TestDefaultExceptionHandler(unittest.TestCase):
 
 	def test_get_argument_suggestions_pass(self):
-		arg1 = Argument[int](name='argument1')
-		arg2 = Argument[str](name='argument2')
-		arg3 = Argument[str](name='argument3')
-		arg4 = Argument[str](name='argument4')
-		arg5 = Argument[int](name='chrono')
+		arg1 = Argument(int, 'argument1')
+		arg2 = Argument(str, 'argument2')
+		arg3 = Argument(str, 'argument3')
+		arg4 = Argument(str, 'argument4')
+		arg5 = Argument(int, 'chrono')
 
 		class TCommand(BaseCommand):
 			def __init__(self):
@@ -38,10 +38,10 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 			self.assertListEqual(expected_matches, returned_suggestions)
 
 	def test_get_argument_suggestions_no_match_pass(self):
-		arg1 = Argument[int](name='argument1')
-		arg2 = Argument[str](name='argument2')
-		arg3 = Argument[bool](name='argument3')
-		arg4 = Argument[str](name='argument4')
+		arg1 = Argument(int, 'argument1')
+		arg2 = Argument(str, 'argument2')
+		arg3 = Argument(bool, 'argument3')
+		arg4 = Argument(str, 'argument4')
 
 		class TCommand(BaseCommand):
 			def __init__(self):
@@ -91,10 +91,10 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 			_cmd3 = cmd3
 			_cmd4 = cmd4
 			_cmd5 = chronocmd
-			_arg1 = Argument[int](name='argument1')
-			_arg2 = Argument[str](name='argument2')
-			_arg3 = Argument[str](name='argument3')
-			_arg4 = Argument[str](name='argument4')
+			_arg1 = Argument(int, 'argument1')
+			_arg2 = Argument(str, 'argument2')
+			_arg3 = Argument(str, 'argument3')
+			_arg4 = Argument(str, 'argument4')
 
 		command = TCommand()
 		default_exception_handler = DefaultExceptionHandler()
@@ -136,10 +136,10 @@ class TestDefaultExceptionHandler(unittest.TestCase):
 			_cmd2 = cmd2
 			_cmd3 = cmd3
 			_cmd4 = cmd4
-			_arg1 = Argument[int](name='argument1')
-			_arg2 = Argument[str](name='argument2')
-			_arg3 = Argument[str](name='argument3')
-			_arg4 = Argument[str](name='argument4')
+			_arg1 = Argument(int, 'argument1')
+			_arg2 = Argument(str, 'argument2')
+			_arg3 = Argument(str, 'argument3')
+			_arg4 = Argument(str, 'argument4')
 
 		command = TCommand()
 		default_exception_handler = DefaultExceptionHandler()

@@ -14,8 +14,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](name='arg1')
-			arg2 = Argument[str](name='arg2')
+			arg1 = Argument(str, 'arg1')
+			arg2 = Argument(str, 'arg2')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg1', 'aaa', '--arg2', 'bbb'])
 		expected_command = RootCommand()
@@ -31,7 +31,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[int](name='arg')
+			arg = Argument(int, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '1515'])
 		expected_command = RootCommand()
@@ -44,7 +44,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](name='arg')
+			arg = Argument(bool, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'true'])
 		expected_command = RootCommand()
@@ -57,7 +57,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](name='arg')
+			arg = Argument(bool, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'false'])
 		expected_command = RootCommand()
@@ -70,7 +70,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](name='arg')
+			arg = Argument(bool, 'arg')
 
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
@@ -80,7 +80,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[int](name='arg')
+			arg = Argument(int, 'arg')
 
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
@@ -90,7 +90,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[float](name='arg')
+			arg = Argument(float, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '1515.5'])
 		expected_command = RootCommand()
@@ -103,7 +103,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[float](name='arg')
+			arg = Argument(float, 'arg')
 
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
@@ -117,7 +117,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[TestEnum](name='arg')
+			arg = Argument(TestEnum, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'B'])
 		expected_command = RootCommand()
@@ -134,7 +134,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[TestEnum](name='arg')
+			arg = Argument(TestEnum, 'arg')
 
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--arg', 'invalid'])
@@ -148,7 +148,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[TestEnum](name='arg')
+			arg = Argument(TestEnum, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'b'])
 		expected_command = RootCommand()
@@ -161,7 +161,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](name='arg')
+			arg = Argument(bool, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg'])
 		expected_command = RootCommand()
@@ -174,9 +174,9 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[bool](name='arg1')
-			arg2 = Argument[bool](name='arg2')
-			arg3 = Argument[bool](name='arg3')
+			arg1 = Argument(bool, 'arg1')
+			arg2 = Argument(bool, 'arg2')
+			arg3 = Argument(bool, 'arg3')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg1', '--arg2', 'true', '--arg3', 'false'])
 		expected_command = RootCommand()
@@ -191,7 +191,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](name='arg')
+			arg = Argument(bool, 'arg')
 
 		for true_value in ['true', 'yes', 'yup', '👍', ':)', '😊', '1', 'positive', 'OK']:
 
@@ -206,7 +206,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](name='arg')
+			arg = Argument(bool, 'arg')
 
 		for false_value in ['false', 'no', 'nah', '👎', ':(', '☹', '0', 'negative']:
 
@@ -221,7 +221,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Path](name='arg')
+			arg = Argument(Path, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '/bin/sh'])
 		expected_command = RootCommand()
@@ -241,7 +241,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Coordinates](name='arg')
+			arg = Argument(Coordinates, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'x=5,y=7'])
 		expected_command = RootCommand()
@@ -262,7 +262,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Label](name='arg')
+			arg = Argument(Label, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'center,x=5,y=7'])
 		expected_command = RootCommand()
@@ -281,7 +281,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Robot](name='arg')
+			arg = Argument(Robot, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'butter'])
 		expected_command = RootCommand()
@@ -300,7 +300,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Counter](name='arg')
+			arg = Argument(Counter, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', '5555'])
 		expected_command = RootCommand()
@@ -320,7 +320,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[TwoPath](name='arg')
+			arg = Argument(TwoPath, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', './a/,./b/'])
 		expected_command = RootCommand()
@@ -341,7 +341,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Book](name='arg')
+			arg = Argument(Book, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'text=\=\=\=\='])
 		expected_command = RootCommand()
@@ -362,7 +362,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Robot](name='arg')
+			arg = Argument(Robot, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'name=Zurbafo\, Destroyer of zoop'])
 		expected_command = RootCommand()
@@ -383,7 +383,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Robot](name='arg')
+			arg = Argument(Robot, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', ''])
 		expected_command = RootCommand()
@@ -404,7 +404,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[Robot](name='arg')
+			arg = Argument(Robot, 'arg')
 
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--arg', 'name=zurbafo,name=wablah'])
@@ -413,7 +413,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[str](position=0, name='arg')
+			arg = Argument(str, 'arg', position=0)
 
 		returned_command = CommandParser(RootCommand()).parse(['The color is yellow'])
 		expected_command = RootCommand()
@@ -425,7 +425,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](position=0, name='arg')
+			arg = Argument(bool, 'arg', position=0)
 
 		returned_command = CommandParser(RootCommand()).parse(['true'])
 		expected_command = RootCommand()
@@ -437,7 +437,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](position=0, name='arg')
+			arg = Argument(bool, 'arg', position=0)
 
 		returned_command = CommandParser(RootCommand()).parse(['False'])
 		expected_command = RootCommand()
@@ -449,7 +449,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[list[str]](position=0, name='arg')
+			arg = Argument(list[str], 'arg', position=0)
 
 		returned_command = CommandParser(RootCommand()).parse(['one,two,three'])
 		expected_command = RootCommand()
@@ -461,7 +461,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[bool](position=0, name='arg', required=True)
+			arg = Argument(bool, 'arg', position=0)
 
 		with self.assertRaises(MissingArgumentException):
 			CommandParser(RootCommand()).parse([])
@@ -470,7 +470,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[str](position=0, name='arg', required=True)
+			arg = Argument(str, 'arg', position=0)
 
 		with self.assertRaises(MissingArgumentException):
 			CommandParser(RootCommand()).parse([])
@@ -479,8 +479,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](name='arg2')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2')
 
 		returned_command = CommandParser(RootCommand()).parse(['arg1', '--arg2', 'arg2'])
 		expected_command = RootCommand()
@@ -493,10 +493,10 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[int](position=0, name='arg1')
-			arg2 = Argument[int](position=1, name='arg2')
-			arg3 = Argument[int](position=2, name='arg3')
-			arg4 = Argument[int](position=3, name='arg4')
+			arg1 = Argument(int, 'arg1', position=0)
+			arg2 = Argument(int, 'arg2', position=1)
+			arg3 = Argument(int, 'arg3', position=2)
+			arg4 = Argument(int, 'arg4', position=3)
 
 		returned_command = CommandParser(RootCommand()).parse(['1', '2', '3', '4'])
 		expected_command = RootCommand()
@@ -511,10 +511,10 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](position=1, name='arg2')
-			arg3 = Argument[str](name='arg3')
-			arg4 = Argument[str](name='arg4')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2', position=1)
+			arg3 = Argument(str, 'arg3')
+			arg4 = Argument(str, 'arg4')
 
 		returned_command = CommandParser(RootCommand()).parse(['arg1', 'arg2', '--arg3', 'arg3', '--arg4', 'arg4'])
 		expected_command = RootCommand()
@@ -529,10 +529,10 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](position=1, name='arg2')
-			arg3 = Argument[str](name='arg3')
-			arg4 = Argument[str](name='arg4')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2', position=1)
+			arg3 = Argument(str, 'arg3')
+			arg4 = Argument(str, 'arg4')
 
 		returned_command = CommandParser(RootCommand()).parse(['arg1', '--arg3', 'arg3', 'arg2', '--arg4', 'arg4'])
 		expected_command = RootCommand()
@@ -547,7 +547,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[str](position=0, name='arg')
+			arg = Argument(str, 'arg', position=0)
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'The color is yellow'])
 		expected_command = RootCommand()
@@ -560,7 +560,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[str](name='arg', required=True)
+			arg = Argument(str, 'arg')
 
 		returned_command = CommandParser(RootCommand()).parse(['--arg', 'a test value'])
 		expected_command = RootCommand()
@@ -573,7 +573,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[str](name='arg', required=True)
+			arg = Argument(str, 'arg')
 	
 		with self.assertRaises(MissingArgumentException):
 			CommandParser(RootCommand()).parse([])
@@ -583,7 +583,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg = Argument[str](name='arg', required=True)
+			arg = Argument(str, 'arg')
 	
 		with self.assertRaises(UnknownArgumentException):
 			CommandParser(RootCommand()).parse(['shouldnotexists'])
@@ -640,8 +640,8 @@ class TestCommandParser(unittest.TestCase):
 		class TestCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='test')
-			name = Argument[str](name='name', value='')
-			count = Argument[int](name='count', value=0)
+			name = Argument(str, 'name', default_value='')
+			count = Argument(int, 'count', default_value=0)
 
 		class RootCommand(BaseCommand):
 			def __init__(self):
@@ -659,8 +659,8 @@ class TestCommandParser(unittest.TestCase):
 		class TestCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='test')
-			name = Argument[str](name='name', value='')
-			count = Argument[int](name='count', value=0)
+			name = Argument(str, 'name', default_value='')
+			count = Argument(int, 'count', default_value=0)
 
 		class RootCommand(BaseCommand):
 			def __init__(self):
@@ -677,7 +677,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			names = Argument[list[str]](name='names', value=[])
+			names = Argument(list[str], name='names', default_value=[])
 		
 		returned_command = CommandParser(RootCommand()).parse(['--names', 'farfofu,blarara,bibabobabi'])
 		expected_command = RootCommand()
@@ -689,7 +689,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			things = Argument[list[int]](name='things', value=[])
+			things = Argument(list[int], name='things', default_value=[])
 		
 		returned_command = CommandParser(RootCommand()).parse(['--things', '1,3,3,7'])
 		expected_command = RootCommand()
@@ -705,7 +705,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			things = Argument[list[TestEnum]](name='things', value=[])
+			things = Argument(list[TestEnum], name='things', default_value=[])
 
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'A,B,B,C'])
 		expected_command = RootCommand()
@@ -717,7 +717,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			things = Argument[dict[str,str]](name='things', value={})
+			things = Argument(dict[str,str], name='things', default_value={})
 		
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'name=Wabla,last_name=Forfafui'])
 		expected_command = RootCommand()
@@ -729,7 +729,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			things = Argument[dict[str,int]](name='things', value={})
+			things = Argument(dict[str,int], name='things', default_value={})
 		
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'a=1,b=3,c=3,d=7'])
 		expected_command = RootCommand()
@@ -745,7 +745,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			things = Argument[dict[str,TestEnum]](name='things', value={})
+			things = Argument(dict[str,TestEnum], name='things', default_value={})
 
 		returned_command = CommandParser(RootCommand()).parse(['--things', 'Liwia=A,Clementia=B,Jia=B,Pomare=C'])
 		expected_command = RootCommand()
@@ -757,7 +757,7 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			things = Argument[dict[str,str]](name='things', value={})
+			things = Argument(dict[str,str], name='things', default_value={})
 		
 		with self.assertRaises(InvalidValueException):
 			CommandParser(RootCommand()).parse(['--things', 'name,last_name=Forfafui'])
@@ -770,8 +770,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](position=0, name='arg2')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2', position=0)
 
 		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
@@ -780,8 +780,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=1, name='arg1')
-			arg2 = Argument[str](position=2, name='arg2')
+			arg1 = Argument(str, 'arg1', position=1)
+			arg2 = Argument(str, 'arg2', position=2)
 
 		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
@@ -790,8 +790,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](position=2, name='arg2')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2', position=2)
 
 		with self.assertRaises(ValidationException):
 			CommandParser(RootCommand())
@@ -800,8 +800,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](position=1, name='arg2')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2', position=1)
 
 		CommandParser(RootCommand())
 
@@ -809,10 +809,10 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](position=0, name='arg1')
-			arg2 = Argument[str](position=1, name='arg2')
-			arg3 = Argument[str](name='arg3')
-			arg4 = Argument[str](name='arg4')
+			arg1 = Argument(str, 'arg1', position=0)
+			arg2 = Argument(str, 'arg2', position=1)
+			arg3 = Argument(str, 'arg3')
+			arg4 = Argument(str, 'arg4')
 
 		CommandParser(RootCommand())
 
@@ -820,8 +820,8 @@ class TestCommandParser(unittest.TestCase):
 		class RootCommand(BaseCommand):
 			def __init__(self):
 				super().__init__(name='root')
-			arg1 = Argument[str](name='arg1')
-			arg2 = Argument[str](name='arg2')
+			arg1 = Argument(str, 'arg1')
+			arg2 = Argument(str, 'arg2')
 
 		CommandParser(RootCommand())
 
@@ -885,7 +885,7 @@ class TestCommandParser(unittest.TestCase):
 		class SubCommand2(BaseCommand):
 			def __init__(self):
 				super().__init__(name='sub2')
-			arg1 = Argument[str](name='arg1')
+			arg1 = Argument(str, 'arg1')
 		class SubCommand1(BaseCommand):
 			def __init__(self):
 				super().__init__(name='sub1')
@@ -903,7 +903,7 @@ class TestCommandParser(unittest.TestCase):
 		class SubCommand2(BaseCommand):
 			def __init__(self):
 				super().__init__(name='sub2')
-			arg1 = Argument[str](name='arg1')
+			arg1 = Argument(str, 'arg1')
 		class SubCommand1(BaseCommand):
 			def __init__(self):
 				super().__init__(name='sub1')

@@ -18,16 +18,16 @@ class RollCommand(Command):
 			description='Roll a dice',
 		)
 	
-	num_of_dice = Argument[int](
+	num_of_dice = Argument(int
 		name='num',
 		description='Number of dice to roll',
-		value=1,
+		default_value=1,
 	)
 
-	faces = Argument[int](
+	faces = Argument(int
 		name='faces',
 		description='how many faces per dice',
-		value=6,
+		default_value=6,
 	)
 
 	def run(self):
