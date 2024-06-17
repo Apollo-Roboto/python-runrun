@@ -38,6 +38,7 @@ classifiers = [
 "Source" = "https://github.com/Apollo-Roboto/python-runrun"
 
 [project.optional-dependencies]
-test = [
-	"pylint==3.0.2"
+dev = [
+	"pylint",
+	"black"
 ]
