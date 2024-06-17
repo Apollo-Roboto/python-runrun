@@ -1,4 +1,9 @@
-# Run Run
+# RunRun
+
+![PyPI Version](https://img.shields.io/pypi/v/runrun.svg)
+![PyPI Python Version](https://img.shields.io/pypi/pyversions/runrun.svg?logo=python&logoColor=gold)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![License MIT](https://img.shields.io/pypi/l/runrun)
 
 A typed command line parser for Python.
 
